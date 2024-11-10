@@ -1,6 +1,8 @@
 import Link from "next/link";
 
 import { Monoton } from "next/font/google";
+import Image from "next/image";
+import logo from "../../public/logo.png";
 
 const monoton = Monoton({
   subsets: ["latin"],
@@ -14,10 +16,11 @@ function Logo() {
       href="/"
       className={`${monoton.className} flex items-center gap-2 z-10`}
     >
-      <img
-        src="/logo.png"
+      <Image
+        src={logo}
         height="60"
         width="60"
+        quality={100}
         alt="WFlance"
         className="rounded-full"
       />
