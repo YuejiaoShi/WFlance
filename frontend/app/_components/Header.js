@@ -1,9 +1,9 @@
-import Logo from "@/app/_components/Logo";
+import Logo from "./Logo";
 import Navigation from "./Navigation";
 
 function Header() {
   return (
-    <header className="flex flex-col bg-primary-300 border-b border-primary-900 h-60 ">
+    <header className="col-span-12 row-span-3 flex flex-col bg-primary-300 border-b border-primary-900 ">
       <div className="flex justify-around items-center bg-primary-500 h-20 py-3">
         <Logo />
         <h1 className="text-2xl text-primary-100">
@@ -13,7 +13,7 @@ function Header() {
           Logout
         </button>
       </div>
-      <div className="flex justify-between items-center text-primary-800 text-3xl px-10 h-40">
+      <div className="flex justify-between items-end text-primary-800 text-3xl px-10 h-40">
         <p>Welcome Rose</p>
         <Navigation />
       </div>
