@@ -1,6 +1,6 @@
 import Client from "./Client";
 
-const clients = [
+const mockClients = [
   {
     id: 118836,
     name: "Clark",
@@ -24,13 +24,8 @@ const clients = [
 function ClientList() {
   return (
     <ul className="flex flex-col gap-1  mb-8 text-lg">
-      {clients.map((client, idx) => (
-        <Client
-          client={client}
-          // onSelectFriend={}
-          // selectedFriend={}
-          key={idx}
-        />
+      {mockClients.map((client, idx) => (
+        <Client client={client} key={idx} />
       ))}
     </ul>
   );
