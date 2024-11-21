@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import ProjectClient from "@/app/_components/client-dashboard-components/ProjectClient";
 import Spinner from "@/app/_components/client-dashboard-components/Spinner";
+import Link from "next/link";
 
 // export const metadata = {
 //   title: "projects",
@@ -11,12 +12,11 @@ export default function Page() {
   const [projects, setProjects] = useState([]);
   const [userName, setUserName] = useState("");
   const [userId, setUserId] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
-      setIsLoading(true);
       try {
         const response = await fetch("/api/user", {
           credentials: "include",
@@ -34,8 +34,6 @@ export default function Page() {
         setError(
           "Error fetching user data: " + error.message
         );
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -46,6 +44,7 @@ export default function Page() {
     if (!userId) return;
 
     const fetchProjects = async () => {
+      setIsLoading(true);
       try {
         const response = await fetch(
           `/api/projects/client/${userId}`,
@@ -55,13 +54,17 @@ export default function Page() {
         );
         if (response.ok) {
           const projectData = await response.json();
+
+          setIsLoading(false);
           setProjects(projectData);
         } else {
+          setIsLoading(false);
           setError(
             `Failed to fetch projects: ${response.statusText}`
           );
         }
       } catch (error) {
+        setIsLoading(false);
         setError(
           `Error fetching projects: ${error.message}`
         );
@@ -101,8 +104,27 @@ export default function Page() {
     return <div>{error}</div>;
   }
 
-  if (projects.length === 0) {
-    return <div>You do not have any projects.</div>;
+  console.log("projects", projects);
+  console.log("isLoading", isLoading);
+  if (!isLoading && projects.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-8 relative z-10 text-center bg-slate-300 ">
+        {/* <Spinner /> */}
+        <h5 className="text-2xl text-primary-800 mb-10 tracking-tight font-normal">
+          You do not have any projects.
+        </h5>
+        <Link
+          href="/client-dashboard/createProject"
+          className="bg-accent-500 max-w-fit px-8 py-6 text-primary-800 text-lg font-semibold hover:bg-accent-600 transition-all"
+        >
+          Create project
+        </Link>
+
+        <h5 className="text-2xl text-primary-800 mb-10 tracking-tight font-normal">
+          to get started.
+        </h5>
+      </div>
+    );
   }
 
   const statusCounts = {

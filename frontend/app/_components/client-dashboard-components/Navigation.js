@@ -6,18 +6,10 @@ export default function Navigation() {
       <ul className="flex gap-16 items-center">
         <li>
           <Link
-            href=""
-            className="hover:text-accent-400 transition-colors"
-          >
-            Projects
-          </Link>
-        </li>
-        <li>
-          <Link
             href="/client-dashboard/timeline"
             className="hover:text-accent-400 transition-colors"
           >
-            timeline
+            Timeline
           </Link>
         </li>
         <li>

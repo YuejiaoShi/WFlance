@@ -16,7 +16,7 @@ export default function RootLayout({ children }) {
     <div className="grid grid-cols-12 grid-rows-11 min-h-screen">
       <Header />
       <SideNavigation />
-      <main className="col-span-9 row-span-7 col-start-4 row-start-4 overflow-auto max-h-[calc(100vh-20rem)]">
+      <main className="col-span-9 row-span-7 col-start-4 row-start-4 overflow-auto max-h-[calc(100vh-20rem)] ">
         {children}
       </main>
       <footer className="col-span-9 col-start-4 row-start-11 h-[10rem]">

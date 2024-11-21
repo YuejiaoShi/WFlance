@@ -10,10 +10,8 @@ import { FlagIcon } from "@heroicons/react/24/solid";
 Chart.register(ArcElement, DoughnutController);
 
 function ClientStatus({ statusCounts }) {
-  // Destructure counts from the statusCounts prop
   const { completed, inProgress, pending } = statusCounts;
 
-  // Dynamic data for the Doughnut chart based on status counts
   const data = {
     labels: ["Completed", "In Progress", "Pending"],
     datasets: [
