@@ -8,11 +8,13 @@ import {
   getUserInfo,
   getUserPathByRole,
 } from "../../utils/userUtil";
+import SpinnerMini from "../client-dashboard-components/SpinnerMini";
 
 const LogIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [formError, setFormError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const onSubmit = async (e) => {
@@ -23,6 +25,8 @@ const LogIn = () => {
       setFormError("Please fill in both fields.");
       return;
     }
+    setIsLoading(true);
+
     try {
       await handleLogIn(email, password, async () => {
         const userInfo = await getUserInfo();
@@ -34,6 +38,7 @@ const LogIn = () => {
     } catch (error) {
       setFormError("Login failed. Please try again.");
     }
+    setIsLoading(false);
   };
 
   return (
@@ -65,7 +70,11 @@ const LogIn = () => {
           type="submit"
           className="w-full bg-primary-purple text-white py-2 rounded-lg hover:bg-primary-purple-dark transition-colors"
         >
-          Sign In
+          {isLoading ? (
+            <SpinnerMini />
+          ) : (
+            <span>Sign In</span>
+          )}
         </button>
       </form>
       {formError && (
