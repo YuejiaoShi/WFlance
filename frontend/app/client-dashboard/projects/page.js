@@ -109,7 +109,6 @@ export default function Page() {
   if (!isLoading && projects.length === 0) {
     return (
       <div className="flex flex-col items-center gap-8 relative z-10 text-center bg-slate-300 ">
-        {/* <Spinner /> */}
         <h5 className="text-2xl text-primary-800 mb-10 tracking-tight font-normal">
           You do not have any projects.
         </h5>

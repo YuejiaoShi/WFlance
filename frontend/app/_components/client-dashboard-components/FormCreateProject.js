@@ -1,33 +1,37 @@
 function FormCreateProject() {
   return (
-    <div className="scale-[1.01]">
+    <div className="scale-[1.01]  text-primary-300 w-11/12 h-full">
       <div className="bg-primary-800 text-primary-300 px-16 py-2 flex justify-between items-center">
         <p>Logged in as</p>
       </div>
 
       <form className="bg-primary-900 py-10 px-16 text-lg flex gap-5 flex-col">
         <div className="space-y-2">
-          <label htmlFor="numGuests">
-            How many guests?
+          <label htmlFor="title">
+            What is your project title?
           </label>
           <input className="px-5 py-3 bg-primary-200 text-primary-800 w-full shadow-sm rounded-sm" />
         </div>
         <div className="space-y-2">
-          <label htmlFor="numGuests">
-            How many guests?
+          <label htmlFor="budget">
+            How much is your budget?
           </label>
           <input className="px-5 py-3 bg-primary-200 text-primary-800 w-full shadow-sm rounded-sm" />
         </div>
         <div className="space-y-2">
-          <label htmlFor="numGuests">
-            How many guests?
+          <label htmlFor="startDate">
+            when do you want to start?
           </label>
+          <input className="px-5 py-3 bg-primary-200 text-primary-800 w-full shadow-sm rounded-sm" />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="startDate">Deadline</label>
           <input className="px-5 py-3 bg-primary-200 text-primary-800 w-full shadow-sm rounded-sm" />
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="numGuests">
-            How many guests?
+          <label htmlFor="endDate">
+            when do you exoecte to finish this project?
           </label>
           <select
             name="numGuests"
@@ -35,38 +39,33 @@ function FormCreateProject() {
             className="px-5 py-3 bg-primary-200 text-primary-800 w-full shadow-sm rounded-sm"
             required
           >
-            <option value="" key="">
-              Select number of guests...
-            </option>
-            {Array.from({ length: 2 }, (_, i) => i + 1).map(
-              (x) => (
-                <option value={x} key={x}>
-                  {x} {x === 1 ? "guest" : "guests"}
-                </option>
-              )
-            )}
+            <option>Select your project status</option>
+
+            <option>Pending</option>
+            <option>In Progress</option>
+            <option>Completed</option>
           </select>
         </div>
 
         <div className="space-y-2">
           <label htmlFor="observations">
-            Anything we should know about your stay?
+            Anything we should know about your project?
           </label>
           <textarea
-            name="observations"
-            id="observations"
+            name="description"
+            id="description"
             className="px-5 py-3 bg-primary-200 text-primary-800 w-full shadow-sm rounded-sm"
-            placeholder="Any pets, allergies, special requirements, etc.?"
+            placeholder="description, special requirements, etc.?"
           />
         </div>
 
         <div className="flex justify-end items-center gap-6">
           <p className="text-primary-300 text-base">
-            Start by selecting dates
+            press boutton and create a new project
           </p>
 
           <button className="bg-accent-500 px-8 py-4 text-primary-800 font-semibold hover:bg-accent-600 transition-all disabled:cursor-not-allowed disabled:bg-gray-500 disabled:text-gray-300">
-            Reserve now
+            Create now
           </button>
         </div>
       </form>
