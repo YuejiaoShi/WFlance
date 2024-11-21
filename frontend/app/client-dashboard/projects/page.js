@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import ProjectClient from "@/app/_components/client-dashboard-components/ProjectClient";
+import Spinner from "@/app/_components/client-dashboard-components/Spinner";
 
 // export const metadata = {
 //   title: "projects",
@@ -10,10 +11,12 @@ export default function Page() {
   const [projects, setProjects] = useState([]);
   const [userName, setUserName] = useState("");
   const [userId, setUserId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
+      setIsLoading(true);
       try {
         const response = await fetch("/api/user", {
           credentials: "include",
@@ -31,6 +34,8 @@ export default function Page() {
         setError(
           "Error fetching user data: " + error.message
         );
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -113,17 +118,21 @@ export default function Page() {
 
   return (
     <div className="">
-      {projects.length > 0 && (
-        <div className="flex flex-col">
-          {projects.map((project) => (
-            <ProjectClient
-              key={project.id}
-              project={project}
-              statusCounts={statusCounts}
-              onDelete={handleDelete}
-            />
-          ))}
-        </div>
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        projects.length > 0 && (
+          <div className="flex flex-col">
+            {projects.map((project) => (
+              <ProjectClient
+                key={project.id}
+                project={project}
+                statusCounts={statusCounts}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
+        )
       )}
     </div>
   );
