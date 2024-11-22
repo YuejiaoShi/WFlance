@@ -17,7 +17,7 @@ function Header() {
         });
         if (response.ok) {
           const userData = await response.json();
-          console.log(userData);
+
           setUserName(userData?.name || "Guest");
         } else {
           console.error("Failed to fetch user data");

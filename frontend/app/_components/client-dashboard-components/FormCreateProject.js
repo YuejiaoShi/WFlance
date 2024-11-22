@@ -1,15 +1,51 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function FormCreateProject() {
+  const [clientId, setClientId] = useState(null);
+
   const [formData, setFormData] = useState({
+    clientId: null,
     title: "",
     budget: "",
     startDate: "",
+    endDate: "",
     deadline: "",
     status: "",
     description: "",
   });
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("/api/user", {
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          setClientId(userData.id);
+        } else {
+          console.error("Failed to fetch user data");
+        }
+      } catch (error) {
+        console.error(
+          "Error fetching user data: " + error.message
+        );
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  useEffect(() => {
+    if (clientId) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        clientId,
+      }));
+    }
+  }, [clientId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,8 +68,22 @@ function FormCreateProject() {
 
       if (response.ok) {
         const result = await response.json();
+
+        console.log("Client ID:", clientId);
+        console.log("Form Data:", formData);
+
         alert("Project created successfully!");
-        console.log("Response:", result);
+
+        setFormData({
+          clientId: clientId,
+          title: "",
+          budget: "",
+          startDate: "",
+          endDate: "",
+          deadline: "",
+          status: "",
+          description: "",
+        });
       } else {
         console.error(
           "Failed to create project:",
@@ -80,6 +130,7 @@ function FormCreateProject() {
             required
           />
         </div>
+
         <div className="space-y-2">
           <label htmlFor="startDate">
             When do you want to start?
@@ -93,6 +144,21 @@ function FormCreateProject() {
             required
           />
         </div>
+
+        <div className="space-y-2">
+          <label htmlFor="startDate">
+            When do you want finish this project?
+          </label>
+          <input
+            name="endDate"
+            value={formData.endDate}
+            onChange={handleChange}
+            type="date"
+            className="px-5 py-3 bg-primary-200 text-primary-800 w-full shadow-sm rounded-sm"
+            required
+          />
+        </div>
+
         <div className="space-y-2">
           <label htmlFor="deadline">Deadline</label>
           <input
