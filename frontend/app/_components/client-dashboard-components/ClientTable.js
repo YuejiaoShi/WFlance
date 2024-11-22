@@ -1,6 +1,18 @@
 import { sendPostJsonRequest } from "@/app/utils/resHandler";
 import Link from "next/link";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 function ClientTable({ project, onDelete }) {
   const { title, status, deadline, id } = project;
 
@@ -29,12 +41,42 @@ function ClientTable({ project, onDelete }) {
               Edit
             </Link>
 
-            <button
+            <AlertDialog>
+              <AlertDialogTrigger>
+                <button className="px-3 py-1 bg-red-500 text-white rounded">
+                  Delete
+                </button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="bg-slate-100 text-primary-900">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    Are you absolutely sure?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will
+                    permanently delete your account and
+                    remove your data from our servers.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => onDelete(id)}
+                  >
+                    Continue
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
+            {/* <button
               onClick={() => onDelete(id)}
               className="px-3 py-1 bg-red-500 text-white rounded"
             >
               Delete
-            </button>
+            </button> */}
           </td>
         </tr>
       </tbody>
