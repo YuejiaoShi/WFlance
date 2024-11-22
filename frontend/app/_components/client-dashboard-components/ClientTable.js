@@ -36,16 +36,16 @@ function ClientTable({ project, onDelete }) {
           <td className="px-4 py-2 border-b">
             <Link
               href={`/client-dashboard/edit/${id}`}
-              className="px-3 py-1 bg-blue-500 text-white rounded"
+              className="px-3 py-1 mx-1 bg-blue-500 text-white rounded"
             >
               Edit
             </Link>
 
             <AlertDialog>
               <AlertDialogTrigger>
-                <button className="px-3 py-1 bg-red-500 text-white rounded">
+                <span className="px-3 py-1 bg-red-500 text-white rounded">
                   Delete
-                </button>
+                </span>
               </AlertDialogTrigger>
               <AlertDialogContent className="bg-slate-100 text-primary-900">
                 <AlertDialogHeader>
