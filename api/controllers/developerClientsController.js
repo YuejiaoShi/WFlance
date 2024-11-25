@@ -4,7 +4,7 @@ class DeveloperClientsController {
   static async getClientsFromDeveloper(req, res) {
     try {
       const clients = await DeveloperClientService.getClientsFromDeveloper(
-        req.params.id
+        req.params.developerId
       );
       res.status(200).json(clients);
     } catch (error) {
@@ -12,34 +12,29 @@ class DeveloperClientsController {
     }
   }
 
-  //   static async createProject(req, res) {
-  //     try {
-  //       const newProject = await DeveloperClientService.createProject(req.body);
-  //       res.status(201).json(newProject);
-  //     } catch (error) {
-  //       res.status(500).json({ error: error.message });
-  //     }
-  //   }
-  //   static async updateProject(req, res) {
-  //     try {
-  //       const updatedProject = await DeveloperClientService.updateProject(
-  //         req.params.id,
-  //         req.body
-  //       );
-  //       res.status(200).json(updatedProject);
-  //     } catch (error) {
-  //       res.status(500).json({ error: error.message });
-  //     }
-  //   }
+  static async assignClientToDeveloper(req, res) {
+    try {
+      const newRelation = await DeveloperClientService.assignClientToDeveloper(
+        req.params.developerId,
+        req.params.clientId
+      );
+      res.status(201).json(newRelation);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 
-  //   static async deleteProject(req, res) {
-  //     try {
-  //       await DeveloperClientService.deleteProject(req.params.id);
-  //       res.status(200).json({ message: "Project deleted successfully" });
-  //     } catch (error) {
-  //       res.status(500).json({ error: error.message });
-  //     }
-  //   }
+  static async deleteClientFromDeveloper(req, res) {
+    try {
+      await DeveloperClientService.deleteClientFromDeveloper(
+        req.params.developerId,
+        req.params.clientId
+      );
+      res.status(200).json({ message: "Project deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 }
 
 export default DeveloperClientsController;
