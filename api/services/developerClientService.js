@@ -15,45 +15,46 @@ class developerClientService {
     }
   }
 
-  //   static async getProjectsByClientId(clientId) {
-  //     try {
-  //       const project = await developerClientModel.findAll({
-  //         where: { clientId: clientId },
-  //       });
-  //       if (!project) {
-  //         throw new Error("Project or client not found");
-  //       }
-  //       return project;
-  //     } catch (error) {
-  //       throw new Error("Error fetching projects: " + error.message);
-  //     }
-  //   }
+  static async assignClientToDeveloper(developerId, clientId) {
+    console.log("Assigning client", clientId, "to developer", developerId);
+    try {
+      const existingRelation = await developerClientModel.findOne({
+        where: {
+          developerId,
+          clientId,
+        },
+      });
+      if (existingRelation) {
+        throw new Error("This client is already assigned to the developer.");
+      }
 
-  //   static async updateProject(id, updatedData) {
-  //     try {
-  //       const project = await developerClientModel.findByPk(id);
-  //       if (!project) {
-  //         throw new Error("Project not found");
-  //       }
-  //       const updatedProject = await project.update(updatedData);
-  //       return updatedProject;
-  //     } catch (error) {
-  //       throw new Error("Error updating project: " + error.message);
-  //     }
-  //   }
+      const newRelation = await developerClientModel.create({
+        developerId,
+        clientId,
+      });
 
-  //   static async deleteProject(id) {
-  //     try {
-  //       const project = await developerClientModel.findByPk(id);
-  //       if (!project) {
-  //         throw new Error("Project not found");
-  //       }
-  //       await project.destroy();
-  //       return { message: "Project deleted successfully" };
-  //     } catch (error) {
-  //       throw new Error("Error deleting project: " + error.message);
-  //     }
-  //   }
+      return newRelation;
+    } catch (error) {
+      throw new Error("Error assigning client to developer: " + error.message);
+    }
+  }
+
+  static async deleteClientFromDeveloper(developerId, clientId) {
+    try {
+      const relation = await developerClientModel.findOne({
+        where: { clientId, developerId },
+      });
+      if (!relation) {
+        throw new Error("Relation developer-client not found");
+      }
+      await relation.destroy();
+      return { message: "Relation developer-client deleted successfully" };
+    } catch (error) {
+      throw new Error(
+        "Error deleting developer-client relation: " + error.message
+      );
+    }
+  }
 }
 
 export default developerClientService;
