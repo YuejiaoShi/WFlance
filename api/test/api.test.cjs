@@ -210,7 +210,7 @@ describe("Manual API Tests", () => {
 
   it("/api/events/ => should create a new event from a userId in the request", async () => {
     const requestBody = {
-      id: "2024-11-20T23:00:00.000Z",
+      id: "2024-11-20T23:00:00.000Z12345",
       title: "test from mocha tester",
       start: "2024-11-20T23:00:00.000Z",
       end: "2024-11-20T23:00:00.000Z",
@@ -223,6 +223,27 @@ describe("Manual API Tests", () => {
       .send(requestBody);
     chai.expect(response.status).to.equal(201);
   });
+
+  it("/api/developer/5/AllClients => returns all clients assigned to developer", async () => {
+    const response = await supertest(config.request.baseURL).get(
+      "/api/developer/5/AllClients"
+    );
+    chai.expect(response.status).to.equal(200);
+  });
+
+  it("/api/developer/5/client/8 => add relation developer - client ", async () => {
+    const response = await supertest(config.request.baseURL).post(
+      "/api/developer/5/client/8"
+    );
+    chai.expect(response.status).to.equal(201);
+  });
+  it("/api/developer/5/client/8 => delete relation developer - client ", async () => {
+    const response = await supertest(config.request.baseURL).delete(
+      "/api/developer/5/client/8"
+    );
+    chai.expect(response.status).to.equal(200);
+  });
+
   //  it("/api/projects/{id} (DELETE) => should delete a project by ID", async () => {
   //   const projectId = "7";
   //   const response = await supertest(config.request.baseURL)
