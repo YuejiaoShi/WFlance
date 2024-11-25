@@ -16,6 +16,7 @@ import chatRoutes from "./routers/chatRouter.js";
 import invoiceRouter from "./routers/invoiceRouter.js";
 import setupSockets from "../sockets/index.js";
 import eventRouter from "./routers/eventRouter.js";
+import developerClientsRouter from "./routers/developerClientsRouter.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -39,6 +40,7 @@ apiRouter.use("/", roleRouter);
 
 apiRouter.use("/nested", nestedRouter);
 apiRouter.use("/developer", devRouter);
+apiRouter.use("/developer", developerClientsRouter);
 apiRouter.use("/projects", projectRouter);
 apiRouter.use("/projects", invoiceRouter);
 apiRouter.use("/chat", chatRoutes);

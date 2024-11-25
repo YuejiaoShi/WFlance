@@ -10,15 +10,15 @@ Message.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    conversationId: {
-      type: DataTypes.INTEGER,
-      field: "conversation_id",
-      allowNull: false,
-      references: {
-        model: Conversation,
-        key: "id",
-      },
-    },
+    // conversationId: {
+    //   type: DataTypes.INTEGER,
+    //   field: "conversation_id",
+    //   allowNull: false,
+    //   references: {
+    //     model: Conversation,
+    //     key: "id",
+    //   },
+    // },
     senderId: {
       type: DataTypes.INTEGER,
       field: "sender_id",
