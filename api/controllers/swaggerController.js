@@ -16,6 +16,112 @@ swaggerController.get("/swagger.json", (req, res) => {
       description: "API for managing projects, users, and authentication.",
     },
     paths: {
+      "/api/developer/{developerId}/AllClients": {
+        get: {
+          summary: "Get all clients assigned to a developer",
+          description:
+            "Fetches all clients assigned to a specific developer by their ID.",
+          parameters: [
+            {
+              name: "developerId",
+              in: "path",
+              required: true,
+              description: "ID of the developer",
+              schema: {
+                type: "integer",
+              },
+            },
+          ],
+          responses: {
+            200: {
+              description: "A list of clients assigned to the developer",
+              content: {
+                "application/json": {
+                  type: "array",
+                  items: {
+                    $ref: "#/components/schemas/Client",
+                  },
+                },
+              },
+            },
+            404: {
+              description: "Developer not found",
+            },
+          },
+        },
+      },
+      "/api/developer/{developerId}/client/{clientId}": {
+        post: {
+          summary: "Add a relation between a developer and a client",
+          description:
+            "Creates a new relation between a developer and a client by their respective IDs.",
+          parameters: [
+            {
+              name: "developerId",
+              in: "path",
+              required: true,
+              description: "ID of the developer",
+              schema: {
+                type: "integer",
+              },
+            },
+            {
+              name: "clientId",
+              in: "path",
+              required: true,
+              description: "ID of the client",
+              schema: {
+                type: "integer",
+              },
+            },
+          ],
+          responses: {
+            201: {
+              description: "Relation created successfully",
+            },
+            400: {
+              description: "Invalid input or relation already exists",
+            },
+            404: {
+              description: "Developer or client not found",
+            },
+          },
+        },
+        delete: {
+          summary: "Delete a relation between a developer and a client",
+          description:
+            "Deletes the relation between a specific developer and client.",
+          parameters: [
+            {
+              name: "developerId",
+              in: "path",
+              required: true,
+              description: "ID of the developer",
+              schema: {
+                type: "integer",
+              },
+            },
+            {
+              name: "clientId",
+              in: "path",
+              required: true,
+              description: "ID of the client",
+              schema: {
+                type: "integer",
+              },
+            },
+          ],
+          responses: {
+            200: {
+              description: "Relation deleted successfully",
+            },
+            404: {
+              description: "Relation not found",
+            },
+          },
+        },
+      },
+
       "/api/events/{userId}": {
         get: {
           summary: "Get all calendar events for a specific user",
