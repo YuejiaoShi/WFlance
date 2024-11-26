@@ -3,8 +3,8 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
-//import http from "http";
-import https from "https";
+import http from "http";
+//import https from "https";
 import nestedRouter from "./routers/nested.js";
 import userRouter from "./routers/userRoutes.js";
 import authRouter from "./routers/authRouter.js";
@@ -19,7 +19,7 @@ import eventRouter from "./routers/eventRouter.js";
 import developerClientsRouter from "./routers/developerClientsRouter.js";
 
 const app = express();
-const server = https.createServer(app);
+const server = http.createServer(app);
 setupSockets(server);
 
 app.use(
