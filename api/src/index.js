@@ -17,6 +17,7 @@ import invoiceRouter from "./routers/invoiceRouter.js";
 import setupSockets from "../sockets/index.js";
 import eventRouter from "./routers/eventRouter.js";
 import developerClientsRouter from "./routers/developerClientsRouter.js";
+import subscribeEmailRouter from "./routers/suscribeEmailRouter.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -37,6 +38,7 @@ const apiRouter = express.Router();
 apiRouter.use("/", authRouter);
 apiRouter.use("/", userRouter);
 apiRouter.use("/", roleRouter);
+apiRouter.use("/", subscribeEmailRouter);
 
 apiRouter.use("/nested", nestedRouter);
 apiRouter.use("/developer", devRouter);
