@@ -35,7 +35,11 @@
 
     <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
     <script>
-      const socket = io("http://127.0.0.1:3001/");
+      const socket = io(
+        window.location.hostname === "localhost"
+          ? "ws://127.0.0.1:3001"
+          : "wss://wflance-production.up.railway.app"
+      );
 
       let senderId = 8; // Replace with the logged-in user's ID dynamically
       let receiverId = null; // Set when joining a room

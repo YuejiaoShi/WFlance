@@ -9,7 +9,6 @@ const setupSockets = (server) => {
     },
   });
 
-  // Handle namespaces or global connections here
   io.on("connection", (socket) => {
     console.log("A user connected");
 
