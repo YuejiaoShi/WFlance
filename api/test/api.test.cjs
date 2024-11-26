@@ -251,4 +251,19 @@ describe("Manual API Tests", () => {
   //     .set("Authorization", `Bearer ${token}`);
   //   chai.expect(response.status).to.equal(200);
   // });
+
+  it("/api/users => create a new user", async () => {
+    const requestBody = {
+      name: "John43454",
+      email: "johnd345oe3@example.com",
+      password: "securepassword1234",
+      phone: "123456789034",
+      roleName: "Client",
+    };
+    const response = await supertest(config.request.baseURL)
+      .post("/api/users")
+      .set("Authorization", `Bearer ${token}`)
+      .send(requestBody);
+    chai.expect(response.status).to.equal(201);
+  });
 });
