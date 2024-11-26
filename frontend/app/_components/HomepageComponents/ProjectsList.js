@@ -4,8 +4,9 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Laptop, Globe, Rocket, BoxSelect } from "lucide-react";
-
+import { useRouter } from "next/navigation";
 const ProjectsList = () => {
+  const router = useRouter();
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -224,7 +225,38 @@ const ProjectsList = () => {
               <h2 className="text-2xl font-bold mb-4">
                 {selectedProject.title}
               </h2>
-              <p className="mb-4">{selectedProject.description}</p>
+              <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
+                Access Denied
+              </h2>
+              <div className="flex justify-center mb-4">
+                <div className="bg-red-100 rounded-full p-4">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-10 w-10 text-red-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 9v3m0 4h.01M12 2a10 10 0 110 20 10 10 0 010-20z"
+                    />
+                  </svg>
+                </div>
+              </div>
+
+              <p className="mb-6 text-center text-gray-700">
+                Please register first to gain access and start taking on
+                projects.
+              </p>
+              <Button
+                className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
+                onClick={() => router.push("/signup")}
+              >
+                Register Now
+              </Button>
               <Button
                 onClick={() => setSelectedProject(null)}
                 className="w-full"

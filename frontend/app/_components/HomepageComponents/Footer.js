@@ -44,34 +44,46 @@ const Footer = () => {
   const [emailStatus, setEmailStatus] = useState(null);
   const router = useRouter();
 
-  // Handles email subscription
   const handleSubscribe = async () => {
-    if (!email) {
-      setEmailStatus("Please enter a valid email address.");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    const sanitizedEmail = email.trim();
+
+    if (!sanitizedEmail) {
+      setEmailStatus("Please enter your email address.");
       return;
     }
 
+    if (!emailRegex.test(sanitizedEmail)) {
+      setEmailStatus("Please enter a valid email address.");
+      return;
+    }
     try {
-      const response = await fetch("/api/subscribe", {
+      setEmailStatus("Subscribing...");
+
+      const response = await fetch("/api/subscribeEmail", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email }), // Send as an object
+        body: JSON.stringify({ email: sanitizedEmail }),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to subscribe");
+        const errorData = await response.json();
+        setEmailStatus(
+          errorData.message || "Subscription failed. Please try again."
+        );
+        return;
       }
 
       const data = await response.json();
-      setEmailStatus("Subscription successful!");
+      setEmailStatus(data.message || "Subscription successful!");
     } catch (err) {
       setEmailStatus("Subscription failed. Please try again.");
     }
   };
 
-  // Navigate to a specific section in the overview page
   const navigateToSection = (section) => {
     router.push(`/overview#${section.toLowerCase()}`);
   };
