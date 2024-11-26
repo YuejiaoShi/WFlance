@@ -54,33 +54,6 @@ app.get("/", (req, res) => {
   res.json({ message: "Hello, this API works" });
 });
 
-// io.on("connection", (socket) => {
-//   console.log("A user connected to the chat");
-
-//   socket.on("disconnect", () => {
-//     console.log("User disconnected from chat");
-//   });
-
-//   socket.on("message", async (msg) => {
-//     console.log("Received message:", msg);
-//     if (!msg.senderId || !msg.receiverId) {
-//       console.error("Invalid message data:", msg);
-//       return;
-//     }
-//     try {
-//       const message = await Message.create({
-//         senderId: msg.senderId,
-//         receiverId: msg.receiverId,
-//         message: msg.message,
-//       });
-
-//       socket.emit("message", message);
-//     } catch (error) {
-//       console.error("Error saving message:", error);
-//     }
-//   });
-// });
-
 const port = process.env.PORT || 3001;
 server.listen(port, () => {
   console.log(`API listening on port ${port}`);
