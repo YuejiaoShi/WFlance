@@ -21,6 +21,7 @@ const chatSocket = (io, socket) => {
       console.error("Invalid message data:", { senderId, receiverId, message });
       return;
     }
+
     const participantIds = [senderId, receiverId].sort().join("_");
     const conversation = await Conversation.findOne({
       where: { participantIds },
