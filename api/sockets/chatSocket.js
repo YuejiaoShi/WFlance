@@ -2,7 +2,6 @@ import Message from "../models/message.js";
 import Conversation from "../models/conversation.js";
 
 const chatSocket = (io, socket) => {
-  // Join or create a room
   socket.on("joinRoom", async ({ senderId, receiverId }) => {
     const participantIds = [senderId, receiverId].sort().join("_");
 
@@ -18,6 +17,10 @@ const chatSocket = (io, socket) => {
   });
 
   socket.on("sendMessage", async ({ senderId, receiverId, message }) => {
+    if (!message || !senderId || !receiverId) {
+      console.error("Invalid message data:", { senderId, receiverId, message });
+      return;
+    }
     const participantIds = [senderId, receiverId].sort().join("_");
     const conversation = await Conversation.findOne({
       where: { participantIds },

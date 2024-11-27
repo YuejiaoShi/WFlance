@@ -16,6 +16,8 @@ import chatRoutes from "./routers/chatRouter.js";
 import invoiceRouter from "./routers/invoiceRouter.js";
 import setupSockets from "../sockets/index.js";
 import eventRouter from "./routers/eventRouter.js";
+import developerClientsRouter from "./routers/developerClientsRouter.js";
+import subscribeEmailRouter from "./routers/suscribeEmailRouter.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -23,7 +25,7 @@ setupSockets(server);
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: process.env.NEXT_PUBLIC_CLIENT_URL,
     credentials: true,
   })
 );
@@ -36,9 +38,11 @@ const apiRouter = express.Router();
 apiRouter.use("/", authRouter);
 apiRouter.use("/", userRouter);
 apiRouter.use("/", roleRouter);
+apiRouter.use("/", subscribeEmailRouter);
 
 apiRouter.use("/nested", nestedRouter);
 apiRouter.use("/developer", devRouter);
+apiRouter.use("/developer", developerClientsRouter);
 apiRouter.use("/projects", projectRouter);
 apiRouter.use("/projects", invoiceRouter);
 apiRouter.use("/chat", chatRoutes);
@@ -51,33 +55,6 @@ app.use("/docs", swaggerController);
 app.get("/", (req, res) => {
   res.json({ message: "Hello, this API works" });
 });
-
-// io.on("connection", (socket) => {
-//   console.log("A user connected to the chat");
-
-//   socket.on("disconnect", () => {
-//     console.log("User disconnected from chat");
-//   });
-
-//   socket.on("message", async (msg) => {
-//     console.log("Received message:", msg);
-//     if (!msg.senderId || !msg.receiverId) {
-//       console.error("Invalid message data:", msg);
-//       return;
-//     }
-//     try {
-//       const message = await Message.create({
-//         senderId: msg.senderId,
-//         receiverId: msg.receiverId,
-//         message: msg.message,
-//       });
-
-//       socket.emit("message", message);
-//     } catch (error) {
-//       console.error("Error saving message:", error);
-//     }
-//   });
-// });
 
 const port = process.env.PORT || 3001;
 server.listen(port, () => {
