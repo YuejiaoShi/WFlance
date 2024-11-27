@@ -4,7 +4,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import http from "http";
-import https from "https";
+
 import nestedRouter from "./routers/nested.js";
 import userRouter from "./routers/userRoutes.js";
 import authRouter from "./routers/authRouter.js";
@@ -20,18 +20,19 @@ import developerClientsRouter from "./routers/developerClientsRouter.js";
 import subscribeEmailRouter from "./routers/suscribeEmailRouter.js";
 
 const app = express();
-const server = http.createServer(app);
-setupSockets(server);
 
-app.use(
-  cors({
-    // origin: process.env.NEXT_PUBLIC_CLIENT_URL,
-    // credentials: true,
+
+const server = https.createServer(app);
+setupSockets(server, {
+  cors: {
     origin: "*", // Allow any origin (use for testing only)
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
-  })
-);
+  },
+});
+
+
+
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.static("public"));
