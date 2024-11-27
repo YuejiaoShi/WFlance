@@ -1,3 +1,4 @@
+'use client';
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -5,12 +6,16 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Laptop, Globe, Rocket, BoxSelect } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-const ProjectsList = () => {
+import { handleAssignProjectToDeveloper } from '@/app/utils/projectUtil';
+import { getFieldFromCookie } from '@/app/utils/auth';
+
+const DevProjectsList = () => {
   const router = useRouter();
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [developerId, setDeveloperId] = useState(null);
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -18,6 +23,8 @@ const ProjectsList = () => {
 
   useEffect(() => {
     const fetchProjects = async () => {
+      const userId = getFieldFromCookie('userId');
+      setDeveloperId(userId);
       try {
         const response = await fetch('/api/projects');
         if (!response.ok) {
@@ -112,6 +119,11 @@ const ProjectsList = () => {
       </motion.div>
     );
 
+  const handleTakeOnProject = () => {
+    handleAssignProjectToDeveloper(selectedProject.id, developerId);
+    setSelectedProject(null);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
@@ -152,6 +164,15 @@ const ProjectsList = () => {
                       <h3 className='text-lg font-semibold'>{project.title}</h3>
                       <div className='flex items-center space-x-2 mt-1'>
                         <Badge variant={getStatusBadgeVariant(project.status)}>{project.status}</Badge>
+                        {project.budget ? (
+                          <Badge className='bg-white text-black border'>€ {Number(project.budget).toFixed(0)}</Badge>
+                        ) : null}
+                        {project.client ? (
+                          <Badge className='bg-white text-black border'>{project.client.name}</Badge>
+                        ) : null}
+                        {project.deadline ? (
+                          <Badge className='bg-white text-black border'>{project.deadline} end</Badge>
+                        ) : null}
                         {project.tags &&
                           project.tags.map(tag => (
                             <Badge key={tag} variant='outline' className='text-xs'>
@@ -201,11 +222,10 @@ const ProjectsList = () => {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
-              className='bg-white p-6 rounded-lg max-w-md w-full'
+              className='bg-white p-6 rounded-lg max-w-md w-full m-4'
               onClick={e => e.stopPropagation()}
             >
-              <h2 className='text-2xl font-bold mb-4'>{selectedProject.title}</h2>
-              <h2 className='text-2xl font-bold mb-4 text-center text-gray-800'>Access Denied</h2>
+              <h2 className='text-2xl font-bold mb-4 text-center'>{selectedProject.title}</h2>
               <div className='flex justify-center mb-4'>
                 <div className='bg-red-100 rounded-full p-4'>
                   <svg
@@ -225,18 +245,18 @@ const ProjectsList = () => {
                 </div>
               </div>
 
-              <p className='mb-6 text-center text-gray-700'>
-                Please register first to gain access and start taking on projects.
-              </p>
-              <Button
-                className='w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition'
-                onClick={() => router.push('/signup')}
-              >
-                Register Now
-              </Button>
-              <Button onClick={() => setSelectedProject(null)} className='w-full'>
-                Close
-              </Button>
+              <p className='mb-6 text-center text-gray-700'>Are you sure you want to take on this project?</p>
+              <div className='flex justify-center gap-6'>
+                <Button
+                  className='w-full bg-primary-blue text-white py-2 px-4 rounded-md hover:bg-primary-blue-dark transition'
+                  onClick={handleTakeOnProject}
+                >
+                  Yes 🚀
+                </Button>
+                <Button onClick={() => setSelectedProject(null)} className='w-full'>
+                  Cancel
+                </Button>
+              </div>
             </motion.div>
           </motion.div>
         )}
@@ -245,4 +265,4 @@ const ProjectsList = () => {
   );
 };
 
-export default ProjectsList;
+export default DevProjectsList;
