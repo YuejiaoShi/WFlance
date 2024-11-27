@@ -51,9 +51,13 @@ const Chat = () => {
     // });
 
     socket.on("connect", () => {
+      console.log("Connected to server!");
+
       console.log("socket.id: " + socket.id);
+      console.log("is socket connected: " + socket.connected);
+      console.log("socket io: " + Object.keys(socket.io));
+      socket.emit("howdy", "stranger");
     });
-    socket.emit("howdy", "stranger");
 
     socket.on("responseEvent", (data) => {
       console.log("Received response from the server: " + data);
