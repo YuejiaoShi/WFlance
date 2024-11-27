@@ -12,8 +12,8 @@ const setupSockets = (server) => {
     },
   });
 
-  io.on("connection", async (socket) => {
-    console.log("A user connected on this: " + socket.id);
+  io.on("hello", (socket) => {
+    console.log("A user connected on this: " + socket);
 
     chatSocket(io, socket);
 
