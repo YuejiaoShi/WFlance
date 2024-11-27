@@ -252,6 +252,13 @@ describe("Manual API Tests", () => {
   //   chai.expect(response.status).to.equal(200);
   // });
 
+  // it("/api/events/{eventId} (DELETE) => should delete an event by ID", async () => {
+  //   const eventId = "2";
+  //   const response = await supertest(config.request.baseURL).delete(
+  //     `/api/events/${eventId}`
+  //   );
+  //   chai.expect(response.status).to.equal(200);
+  // });
   it("/api/users => create a new user", async () => {
     const requestBody = {
       name: "John43454",

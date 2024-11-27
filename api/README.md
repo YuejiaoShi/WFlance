@@ -96,7 +96,7 @@ https://wflance-production.up.railway.app/docs/api-docs
 
 ```javascript
 
- npx mocha test/api.test.cjs
+npx mocha test/api.test.cjs
 
 ```
 
