@@ -20,8 +20,15 @@ import developerClientsRouter from "./routers/developerClientsRouter.js";
 import subscribeEmailRouter from "./routers/suscribeEmailRouter.js";
 
 const app = express();
-const server = http.createServer(app);
-setupSockets(server);
+
+const server = https.createServer(app);
+setupSockets(server, {
+  cors: {
+    origin: "*", // Allow any origin (use for testing only)
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+  },
+});
 
 // app.use(
 //   cors({
