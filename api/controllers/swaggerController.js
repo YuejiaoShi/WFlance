@@ -304,6 +304,30 @@ swaggerController.get("/swagger.json", (req, res) => {
             },
           ],
         },
+        delete: {
+          tags: ["Events"],
+          summary: "Delete an event by eventId",
+          description: "Deletes a specific event identified by its ID.",
+          parameters: [
+            {
+              name: "eventId",
+              in: "path",
+              required: true,
+              description: "The ID of the event to delete.",
+              schema: {
+                type: "string",
+              },
+            },
+          ],
+          responses: {
+            200: {
+              description: "Successfully deleted the event.",
+            },
+            404: {
+              description: "Event not found.",
+            },
+          },
+        },
       },
       "/api/events/": {
         post: {
