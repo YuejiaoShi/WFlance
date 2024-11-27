@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MessageSquare,
@@ -14,6 +14,7 @@ const HomePage = () => {
   const router = useRouter();
   const [hoveredCard, setHoveredCard] = useState(null);
   const [isDemoVisible, setDemoVisible] = useState(false);
+  const [imageSource, setImageSource] = useState("/images/developer.jpeg");
 
   function handleClick() {
     setDemoVisible(!isDemoVisible);
@@ -93,6 +94,28 @@ const HomePage = () => {
       },
     },
   };
+  const fadeInVariants = {
+    hidden: { opacity: 0, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        duration: 0.8,
+        ease: "easeOut",
+      },
+    },
+  };
+
+  useEffect(() => {
+    const images = [
+      "/images/developer.jpeg",
+      "/images/developer3.jpeg",
+      "/images/developer4.jpeg",
+    ];
+
+    const randomImage = images[Math.floor(Math.random() * images.length)];
+    setImageSource(randomImage);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
@@ -183,9 +206,14 @@ const HomePage = () => {
               </motion.div>
             </motion.div>
 
-            <motion.div animate={floatingAnimation} className="relative">
+            <motion.div
+              initial="hidden"
+              animate={["visible", floatingAnimation]}
+              variants={fadeInVariants}
+              className="relative"
+            >
               <img
-                src="/images/developer.jpeg"
+                src={imageSource}
                 alt="Developer working"
                 className="rounded-lg shadow-2xl"
               />

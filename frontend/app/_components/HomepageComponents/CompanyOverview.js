@@ -1,8 +1,19 @@
 "use client";
 import React from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 function CompanyOverview() {
   const router = useRouter();
+  useEffect(() => {
+    if (router?.asPath && router.asPath.includes("#")) {
+      const elementId = router.asPath.split("#")[1];
+      const element = document.getElementById(elementId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [router.asPath]);
+
   const sections = {
     Product: [
       {
@@ -232,7 +243,7 @@ function CompanyOverview() {
                   }}
                   className="card"
                 >
-                  <div id={item.title}>
+                  <div id={item.title.toLowerCase()}>
                     <h3
                       style={{
                         fontSize: "20px",
