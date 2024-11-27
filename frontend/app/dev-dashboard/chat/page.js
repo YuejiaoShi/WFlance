@@ -51,7 +51,7 @@ const Chat = () => {
     });
 
     socket.on("responseEvent", (event) => {
-      setButtonCont("Recieved response from the chat server: " + event);
+      setButtonCont("Received response from the chat server: " + event);
     });
     // socket.on("receiveMessage", (message) => {
     //   setMessagesByRoom((prev) => ({
@@ -128,7 +128,12 @@ const Chat = () => {
 
   return (
     <>
-      <button onClick={sendSocketEvents}>{buttonCont}</button>
+      <button
+        style={{ width: "100px", height: "auto", margin: "30px" }}
+        onClick={sendSocketEvents}
+      >
+        {buttonCont}
+      </button>
     </>
     // <div className="flex h-full bg-gray-100 flex-col mx-auto max-w-screen-xl">
     //   <div className="flex flex-1 p-10 flex-col">
