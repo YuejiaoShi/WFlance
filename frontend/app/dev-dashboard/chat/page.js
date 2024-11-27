@@ -48,9 +48,11 @@ const Chat = () => {
 
     socket.on("connect", () => {
       console.log("Connected to the chat server: " + socket.id);
+      socket.emit("Hello, world!");
     });
 
     socket.on("responseEvent", (event) => {
+      console.log("Received response from the server: " + event);
       setButtonCont("Received response from the chat server: " + event);
     });
     // socket.on("receiveMessage", (message) => {
@@ -73,6 +75,7 @@ const Chat = () => {
   }, []);
 
   const sendSocketEvents = () => {
+    console.log("button pressed");
     socket.on("myEvent", "Hello Server");
   };
   // Join room
@@ -129,7 +132,7 @@ const Chat = () => {
   return (
     <>
       <button
-        style={{ width: "100px", height: "auto", margin: "30px" }}
+        className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600"
         onClick={sendSocketEvents}
       >
         {buttonCont}
