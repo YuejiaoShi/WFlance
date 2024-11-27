@@ -21,8 +21,7 @@ import subscribeEmailRouter from "./routers/suscribeEmailRouter.js";
 
 const app = express();
 
-
-const server = https.createServer(app);
+const server = http.createServer(app);
 setupSockets(server, {
   cors: {
     origin: "*", // Allow any origin (use for testing only)
