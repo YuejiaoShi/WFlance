@@ -2,8 +2,6 @@ import Message from "../models/message.js";
 import Conversation from "../models/conversation.js";
 
 const chatSocket = (io, socket) => {
-  socket.emit("howdy", "stranger");
-
   socket.on("myEvent", () => {
     socket.emit("responseEvent", "Hello client!");
   });
