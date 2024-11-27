@@ -46,10 +46,14 @@ const Chat = () => {
     // const socket = io(socketURL, { reconnection: true });
     // socketRef.current = socket;
 
-    socket.on("connect", () => {
-      console.log("Connected to the chat server: " + socket.id);
-      socket.emit("Hello, world!");
+    // socket.on("connect", () => {
+    //   console.log("Connected to the chat server: " + socket.id);
+    // });
+
+    socket.on("hello", (arg) => {
+      console.log(arg);
     });
+    socket.emit("howdy", "stranger");
 
     socket.on("responseEvent", (event) => {
       console.log("Received response from the server: " + event);
