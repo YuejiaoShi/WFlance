@@ -13,7 +13,7 @@ const setupSockets = (server) => {
   });
 
   io.on("connection", (socket) => {
-    console.log("A user connected");
+    console.log("A user connected on this: " + socket.id);
 
     chatSocket(io, socket);
 
