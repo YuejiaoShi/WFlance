@@ -8,11 +8,11 @@ const setupSockets = (server) => {
       // credentials: true,
       origin: "*", // Allow any origin (use for testing only)
       methods: ["GET", "POST"],
-      allowedHeaders: ["Content-Type"],
+      //  allowedHeaders: ["Content-Type"],
     },
   });
 
-  io.on("connection", (socket) => {
+  io.on("connection", async (socket) => {
     console.log("A user connected on this: " + socket.id);
 
     chatSocket(io, socket);
