@@ -23,12 +23,12 @@ const app = express();
 const server = http.createServer(app);
 setupSockets(server);
 
-app.use(
-  cors({
-    origin: process.env.NEXT_PUBLIC_CLIENT_URL,
-    credentials: true,
-  })
-);
+// app.use(
+//   cors({
+//     origin: process.env.NEXT_PUBLIC_CLIENT_URL,
+//     credentials: true,
+//   })
+// );
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.static("public"));
