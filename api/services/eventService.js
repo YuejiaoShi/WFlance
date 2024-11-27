@@ -21,15 +21,28 @@ class EventService {
   //events
   static async getEventsByUserId(userId) {
     try {
-      const project = await EventModel.findAll({
+      const events = await EventModel.findAll({
         where: { userId: userId },
       });
-      if (!project) {
+      if (!events) {
         throw new Error("Events not found");
       }
-      return project;
+      return events;
     } catch (error) {
       throw new Error("Error fetching events: " + error.message);
+    }
+  }
+
+  static async deleteEvent(id) {
+    try {
+      const event = await EventModel.findByPk(id);
+      if (!event) {
+        throw new Error("Event not found");
+      }
+      await event.destroy();
+      return { message: "Event deleted successfully" };
+    } catch (error) {
+      throw new Error("Error deleting event: " + error.message);
     }
   }
 }

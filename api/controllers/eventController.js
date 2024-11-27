@@ -18,6 +18,15 @@ class EventController {
       res.status(404).json({ error: error.message });
     }
   }
+
+  static async deleteEvent(req, res) {
+    try {
+      await EventService.deleteEvent(req.params.id);
+      res.status(200).json({ message: "Event deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 }
 
 export default EventController;
