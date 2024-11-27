@@ -50,14 +50,14 @@ const Chat = () => {
     //   console.log("Connected to the chat server: " + socket.id);
     // });
 
-    socket.on("hello", (arg) => {
-      console.log(arg);
+    socket.on("connect", () => {
+      console.log("socket.id: " + socket.id);
     });
     socket.emit("howdy", "stranger");
 
-    socket.on("responseEvent", (event) => {
-      console.log("Received response from the server: " + event);
-      setButtonCont("Received response from the chat server: " + event);
+    socket.on("responseEvent", (data) => {
+      console.log("Received response from the server: " + data);
+      setButtonCont("Received response from the chat server: " + data);
     });
     // socket.on("receiveMessage", (message) => {
     //   setMessagesByRoom((prev) => ({
@@ -80,7 +80,7 @@ const Chat = () => {
 
   const sendSocketEvents = () => {
     console.log("button pressed");
-    socket.on("myEvent", "Hello Server");
+    socket.on("myevent", "Hello Server");
   };
   // Join room
   // const joinRoom = (specificRoomName = null) => {
