@@ -2,6 +2,10 @@ import Message from "../models/message.js";
 import Conversation from "../models/conversation.js";
 
 const chatSocket = (io, socket) => {
+  socket.on("myEvent", () => {
+    socket.emit("responseEvent", "Hello client!");
+  });
+
   socket.on("joinRoom", async ({ senderId, receiverId }) => {
     const participantIds = [senderId, receiverId].sort().join("_");
 
