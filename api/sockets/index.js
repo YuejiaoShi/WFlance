@@ -2,8 +2,13 @@ import { Server } from "socket.io";
 import chatSocket from "./chatSocket.js";
 
 const setupSockets = (server) => {
-  const io = new Server(server);
-
+  const io = new Server(server, {
+    cors: {
+      origin: "*", // Allow any origin (use for testing only)
+      methods: ["GET", "POST"],
+      allowedHeaders: ["Content-Type"],
+    },
+  });
   //   {
   //   cors: {
   //     origin: process.env.NEXT_PUBLIC_CLIENT_URL,
