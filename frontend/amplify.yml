@@ -1,0 +1,12 @@
+version: 1
+frontend:
+  phases:
+    build:
+      commands:
+        - "cd frontend && npm run build"
+  artifacts:
+    baseDirectory: /frontend/out
+    files:
+      - "**/*"
+  cache:
+    paths: []
