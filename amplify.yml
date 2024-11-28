@@ -3,15 +3,16 @@ frontend:
   phases:
     preBuild:
       commands:
-        - "cd frontend"
-        - "npm install --include=optional sharp" # Ensures optional dependencies
+        - "cd frontend" # Navigate to the frontend directory
+        - "npm install --include=optional sharp" # Install dependencies
     build:
       commands:
-        - "npm run build"
+        - "cd frontend" # Ensure commands run in the right directory
+        - "npm run build" # Build the Next.js app
   artifacts:
-    baseDirectory: frontend/.next
+    baseDirectory: frontend/.next # Adjusted to match your folder structure
     files:
-      - "**/*"
+      - "**/*" # Include all files in the .next directory
   cache:
     paths:
-      - "frontend/node_modules/**/*"
+      - "frontend/node_modules/**/*" # Cache node_modules to speed up builds
