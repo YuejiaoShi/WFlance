@@ -3,10 +3,13 @@ frontend:
   phases:
     build:
       commands:
-        - "cd frontend && npm run build"
+        - "cd frontend"
+        - "npm install"
+        - "npm run build"
   artifacts:
     baseDirectory: /frontend/out
     files:
       - "**/*"
   cache:
-    paths: []
+    paths:
+      - "frontend/node_modules/**/*"
