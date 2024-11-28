@@ -13,10 +13,12 @@ const setupSockets = (server) => {
   });
 
   io.on("connection", (socket) => {
+    //works
     console.log("A user connected on this: " + socket.id);
 
-    socket.emit("Hello, world!");
+    socket.emit("Hello", "world!");
 
+    //works
     socket.on("howdy", (arg) => {
       console.log(arg);
     });

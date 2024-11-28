@@ -1,5 +1,11 @@
 import { toast } from 'react-toastify';
-import { handleResponse, sendGetRequest, defaultSuccessCallback, sendDeleteRequest, sendPostJsonRequest } from './resHandler';
+import {
+  handleResponse,
+  sendGetRequest,
+  defaultSuccessCallback,
+  sendDeleteRequest,
+  sendPostJsonRequest,
+} from './resHandler';
 
 export const getAllProjectsFromDeveloper = async UserId => {
   const response = await sendGetRequest(`/api/developer/getAllProjectsFromDeveloper/${UserId}`);
@@ -43,4 +49,17 @@ export const updateProjectById = async (id, project) => {
   return handleResponse(response, defaultSuccessCallback, () => {
     toast.error('Failed to update project');
   });
+};
+
+export const handleAssignProjectToDeveloper = async (projectId, developerId) => {
+  const response = await sendPostJsonRequest(`/api/developer/assignProject`, { projectId, developerId });
+  return handleResponse(
+    response,
+    () => {
+      toast.success('Project assigned successfully');
+    },
+    () => {
+      toast.error('Failed to assign project to developer');
+    }
+  );
 };
