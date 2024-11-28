@@ -5,6 +5,14 @@ import { getAllClientsFromDeveloper } from '@/app/utils/chatUtil';
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 
+export const formatClients = clients => {
+  return clients.map(client => ({
+    name: client.client.name,
+    id: client.clientId,
+  }));
+};
+
+
 const Chat = () => {
   const [socket, setSocket] = useState(null);
   const [clients, setClients] = useState([]);
@@ -14,14 +22,6 @@ const Chat = () => {
   const [messagesByRoom, setMessagesByRoom] = useState({});
   const [messageInput, setMessageInput] = useState('');
   const messagesEndRef = useRef(null);
-
-  // Format clients
-  const formatClients = clients => {
-    return clients.map(client => ({
-      name: client.client.name,
-      id: client.clientId,
-    }));
-  };
 
   // Initialize chat
   useEffect(() => {

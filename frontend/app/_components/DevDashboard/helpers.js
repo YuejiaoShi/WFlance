@@ -25,7 +25,7 @@ export const getStatusIcon = status => {
 export const formatProjectData = project => ({
   id: project.projects.id,
   budget: Number(project.projects.budget).toFixed(0),
-  clientName: project.projects.client.name || 'No client',
+  clientName: project.projects.client?.name || 'No client',
   status: project.projects.status,
   statusCapital: capitalizeStatus(project.projects.status),
   title: project.projects.title,
