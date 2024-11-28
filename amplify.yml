@@ -7,7 +7,6 @@ frontend:
         - "npm install --include=optional sharp" # Install dependencies
     build:
       commands:
-        - "cd frontend" # Ensure commands run in the right directory
         - "npm run build" # Build the Next.js app
   artifacts:
     baseDirectory: frontend/.next # Adjusted to match your folder structure
