@@ -1,4 +1,4 @@
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 export async function handleResponse(
   response,
@@ -6,20 +6,20 @@ export async function handleResponse(
   errorCallback = defaultErrorCallback
 ) {
   if (response.ok) {
-    const contentType = response.headers.get('Content-Type');
+    const contentType = response.headers.get("Content-Type");
 
     // If response is JSON
-    if (contentType && contentType.includes('application/json')) {
+    if (contentType && contentType.includes("application/json")) {
       const result = await response.json();
       successCallback(result);
       return result;
     }
 
     // If response is a PDF file
-    if (contentType && contentType.includes('application/pdf')) {
+    if (contentType && contentType.includes("application/pdf")) {
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
       link.download = `invoice.pdf`;
       link.click();
@@ -31,32 +31,48 @@ export async function handleResponse(
   }
 }
 
-export const defaultSuccessCallback = result => {};
-export const defaultErrorCallback = errorText => {
+export const defaultSuccessCallback = (result) => {};
+export const defaultErrorCallback = (errorText) => {
   toast.error(errorText);
 };
 
-export async function sendPostJsonRequest(url, data = {}, optionsHeaders = {}, optionsFields = {}) {
+export async function sendPostJsonRequest(
+  url,
+  data = {},
+  optionsHeaders = {},
+  optionsFields = {}
+) {
   return await fetch(url, {
     ...optionsFields,
-    method: 'POST',
-    headers: { ...optionsHeaders, 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { ...optionsHeaders, "Content-Type": "application/json" },
     body: JSON.stringify(data),
+    mode: "cors",
   });
 }
 
-export async function sendGetRequest(url, optionsHeaders = {}, optionsFields = {}) {
+export async function sendGetRequest(
+  url,
+  optionsHeaders = {},
+  optionsFields = {}
+) {
   return await fetch(url, {
     ...optionsFields,
-    method: 'GET',
+    method: "GET",
     headers: optionsHeaders,
+    mode: "cors",
   });
 }
 
-export async function sendDeleteRequest(url, optionsHeaders = {}, optionsFields = {}) {
+export async function sendDeleteRequest(
+  url,
+  optionsHeaders = {},
+  optionsFields = {}
+) {
   return await fetch(url, {
     ...optionsFields,
-    method: 'DELETE',
+    method: "DELETE",
     headers: optionsHeaders,
+    mode: "cors",
   });
 }

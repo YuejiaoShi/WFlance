@@ -150,7 +150,7 @@ const HomePage = () => {
           src="/images/demo.gif"
           alt="Developer working"
           className="rounded-lg shadow-2xl"
-          loading="lazy"
+          priority="true"
         />
       )}
       {/* Hero Section */}
@@ -216,6 +216,7 @@ const HomePage = () => {
                 src={imageSource}
                 alt="Developer working"
                 className="rounded-lg shadow-2xl"
+                priority="true"
               />
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-lg"
@@ -292,6 +293,7 @@ const HomePage = () => {
                     src={member.image}
                     alt={member.name}
                     className="w-full h-48 object-cover"
+                    priority="true"
                   />
                   <div className="p-4">
                     <h3 className="text-lg font-bold text-white">
