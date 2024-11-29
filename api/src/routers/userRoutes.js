@@ -14,12 +14,12 @@ userRouter.get("/", (req, res) => {
 });
 
 userRouter.get("/users", authenticateToken, getUsers);
-//userRouter.get("/users", getUsers);
+//userRouter.get("/users",authenticateToken, getUsers);
 userRouter.get("/users/:id", authenticateToken, getUserById);
-//userRouter.get("/users/:id", getUserById);
+//userRouter.get("/users/:id",authenticateToken, getUserById);
 
 userRouter.post("/users", createUser);
 
-userRouter.get("/user", authenticateToken, getUserFromToken);
+userRouter.get("/user", getUserFromToken);
 
 export default userRouter;
