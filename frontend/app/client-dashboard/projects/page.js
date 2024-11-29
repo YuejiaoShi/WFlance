@@ -18,9 +18,12 @@ export default function Page() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("/api/user", {
-          credentials: "include",
-        });
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/user`,
+          {
+            credentials: "include",
+          }
+        );
 
         if (response.ok) {
           const userData = await response.json();
@@ -43,9 +46,12 @@ export default function Page() {
 
     const fetchProjects = async () => {
       try {
-        const response = await fetch(`/api/projects/client/${userId}`, {
-          credentials: "include",
-        });
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/projects/client/${userId}`,
+          {
+            credentials: "include",
+          }
+        );
         if (response.ok) {
           const projectData = await response.json();
           console.log(projectData);
@@ -63,10 +69,13 @@ export default function Page() {
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`/api/projects/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
 
       if (response.ok) {
         const projectData = await response.json();

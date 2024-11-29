@@ -11,12 +11,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "../ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { useEffect, useState } from "react";
 import { getFieldFromCookie } from "@/app/utils/auth";
 
@@ -33,7 +28,7 @@ function Calender() {
       setUserId(userId);
       try {
         const response = await fetch(
-          `/api/events/${userId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/events/${userId}`,
           {
             method: "GET",
             credentials: "include",
@@ -41,12 +36,8 @@ function Calender() {
         );
 
         if (response.ok) {
-          const contentType =
-            response.headers.get("Content-Type");
-          if (
-            contentType &&
-            contentType.includes("application/json")
-          ) {
+          const contentType = response.headers.get("Content-Type");
+          if (contentType && contentType.includes("application/json")) {
             const result = await response.json();
 
             setCurrentEvent(result);
@@ -73,11 +64,7 @@ function Calender() {
   };
 
   const handleEventClick = (selected) => {
-    if (
-      window.confirm(
-        "Are you sure you want to delete this event?"
-      )
-    ) {
+    if (window.confirm("Are you sure you want to delete this event?")) {
       selected.event.remove();
     }
   };
@@ -98,13 +85,16 @@ function Calender() {
       };
       try {
         // POST the newEvent to the server
-        const response = await fetch("/api/events", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newEvent),
-        });
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/events`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newEvent),
+          }
+        );
 
         if (response.ok) {
           // Optionally process the server's response
@@ -117,10 +107,7 @@ function Calender() {
           // Close the dialog or reset state
           handleCloseDialog();
         } else {
-          console.error(
-            "Failed to add event:",
-            response.statusText
-          );
+          console.error("Failed to add event:", response.statusText);
         }
       } catch (error) {
         console.error("Error adding event:", error);
@@ -137,9 +124,7 @@ function Calender() {
           </div>
           <ul className="space-y-4">
             {currentEvent.length <= 0 && (
-              <div className="italic text-center text-gray-400">
-                No Events
-              </div>
+              <div className="italic text-center text-gray-400">No Events</div>
             )}
 
             {currentEvent.length > 0 &&
@@ -177,40 +162,28 @@ function Calender() {
             select={HandleDateClick}
             eventClick={handleEventClick}
             eventsSet={(events) =>
-              setCurrentEvent(
-                events.map((event) => event.toPlainObject())
-              )
+              setCurrentEvent(events.map((event) => event.toPlainObject()))
             }
             initialEvents={
               typeof window !== "undefined"
-                ? JSON.parse(
-                    localStorage.getItem("events") || "[]"
-                  )
+                ? JSON.parse(localStorage.getItem("events") || "[]")
                 : []
             }
           />
         </div>
       </div>
 
-      <Dialog
-        open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-      >
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>Add Event</DialogTitle>
           </DialogHeader>
-          <form
-            className="space-x-5 mb-4"
-            onSubmit={handleAddEvent}
-          >
+          <form className="space-x-5 mb-4" onSubmit={handleAddEvent}>
             <input
               type="text"
               placeholder="Event Title"
               value={newEventTitle}
-              onChange={(e) =>
-                setNewEventTitle(e.target.value)
-              }
+              onChange={(e) => setNewEventTitle(e.target.value)}
               required
               className="border border-gray-200 p-3 rounded-md text-lg"
             />

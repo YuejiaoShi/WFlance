@@ -71,7 +71,7 @@ const Footer = () => {
           body: JSON.stringify({ email: sanitizedEmail }),
         }
       );
-
+      console.log(response);
       if (!response.ok) {
         const errorData = await response.json();
         setEmailStatus(

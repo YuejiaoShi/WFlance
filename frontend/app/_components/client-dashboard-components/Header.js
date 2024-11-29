@@ -9,9 +9,12 @@ function Header() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("/api/user", {
-          credentials: "include",
-        });
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/user`,
+          {
+            credentials: "include",
+          }
+        );
         if (response.ok) {
           const userData = await response.json();
 
