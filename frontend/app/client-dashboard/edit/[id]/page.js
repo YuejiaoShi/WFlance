@@ -1,4 +1,16 @@
-"use client";
+// This is required for static export with dynamic routes
+export async function generateStaticParams() {
+  // Replace this with your logic to fetch all the possible project IDs
+  const res = await fetch("/api/projects"); // Assuming your API endpoint returns a list of projects
+  const projects = await res.json();
+
+  // Generate static paths based on available project IDs
+  return projects.map((project) => ({
+    id: project.id.toString(), // Ensure the ID is a string, as dynamic routes use strings
+  }));
+}
+
+("use client");
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -28,27 +40,19 @@ export default function EditProject({ params }) {
 
     const fetchProject = async () => {
       try {
-        const response = await fetch(
-          `/api/projects/${projectId}`,
-          {
-            method: "POST",
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`/api/projects/${projectId}`, {
+          method: "POST",
+          credentials: "include",
+        });
         if (response.ok) {
           const data = await response.json();
           setProjectData(data);
         } else {
           setError("Failed to fetch project data.");
-          console.error(
-            "Failed to fetch project:",
-            response.statusText
-          );
+          console.error("Failed to fetch project:", response.statusText);
         }
       } catch (error) {
-        setError(
-          `Error fetching project: ${error.message}`
-        );
+        setError(`Error fetching project: ${error.message}`);
         console.error("Error fetching project:", error);
       }
     };
@@ -60,23 +64,17 @@ export default function EditProject({ params }) {
     e.preventDefault();
     setError(null);
     try {
-      const response = await fetch(
-        `/api/projects/${projectId}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(projectData),
-        }
-      );
+      const response = await fetch(`/api/projects/${projectId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(projectData),
+      });
 
       if (response.ok) {
         router.push("/client-dashboard/projects");
       } else {
         setError("Failed to update project.");
-        console.error(
-          "Failed to update project:",
-          response.statusText
-        );
+        console.error("Failed to update project:", response.statusText);
       }
     } catch (error) {
       setError(`Error updating project: ${error.message}`);
@@ -95,9 +93,7 @@ export default function EditProject({ params }) {
 
   return (
     <form onSubmit={handleSubmit}>
-      {error && (
-        <div className="text-red-500 mb-4">{error}</div>
-      )}
+      {error && <div className="text-red-500 mb-4">{error}</div>}
       <label>
         Project Name:
         <input

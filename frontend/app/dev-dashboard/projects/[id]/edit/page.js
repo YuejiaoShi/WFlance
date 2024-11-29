@@ -1,4 +1,18 @@
-"use client";
+// Inside edit/[id]/page.js
+
+// This is required for static export with dynamic routes
+export async function generateStaticParams() {
+  // Replace this with your logic to fetch all the possible project IDs
+  const res = await fetch("/api/projects"); // Assuming your API endpoint returns a list of projects
+  const projects = await res.json();
+
+  // Generate static paths based on available project IDs
+  return projects.map((project) => ({
+    id: project.id.toString(), // Ensure the ID is a string, as dynamic routes use strings
+  }));
+}
+
+("use client");
 import Breadcrumbs from "@/app/_components/DevDashboard/Breadcrumbs";
 import { getProjectById, updateProjectById } from "@/app/utils/projectUtil";
 import { use, useEffect, useState } from "react";
