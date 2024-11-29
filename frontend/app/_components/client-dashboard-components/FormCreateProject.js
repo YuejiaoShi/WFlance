@@ -38,13 +38,16 @@ function FormCreateProject() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("/api/projects/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/projects/create`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       if (response.ok) {
         const result = await response.json();
@@ -65,9 +68,7 @@ function FormCreateProject() {
         const error = await response.json();
         console.error("Error details:", error);
         alert(
-          `Failed to create project: ${
-            error.details || response.statusText
-          }`
+          `Failed to create project: ${error.details || response.statusText}`
         );
       }
     } catch (error) {
