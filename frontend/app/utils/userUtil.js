@@ -2,7 +2,8 @@ import { sendGetRequest, handleResponse } from "./resHandler";
 
 export async function getUserInfo() {
   const response = await sendGetRequest(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/user`
+    `${process.env.NEXT_PUBLIC_API_URL}/api/user`,
+    { "X-rasmus": "rasmus" }
   );
   return await handleResponse(response);
 }
