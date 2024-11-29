@@ -56,17 +56,10 @@ export async function sendGetRequest(
   optionsHeaders = {},
   optionsFields = {}
 ) {
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsInJvbGUiOiJEZXZlbG9wZXIiLCJpYXQiOjE3MzI5MDM1MzksInNlc3Npb25JZCI6IjUtMTczMjkwMzUzOTE0MyIsImlzcyI6IllBUiBzb2x1dGlvbnMiLCJleHAiOjE3MzI5MDcxMzl9.4xopcX3LffWXF6-UbcxpeOU8mA7Eotuodmez6MumfEM";
-  const headers = {
-    ...optionsHeaders,
-    Authorization: `Bearer ${token}`,
-  };
-
   return await fetch(url, {
     ...optionsFields,
     method: "GET",
-    headers: headers,
+    headers: optionsHeaders,
     mode: "cors",
   });
 }
