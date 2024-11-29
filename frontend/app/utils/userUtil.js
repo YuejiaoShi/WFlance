@@ -3,7 +3,13 @@ import { sendGetRequest, handleResponse } from "./resHandler";
 export async function getUserInfo() {
   const response = await sendGetRequest(
     `${process.env.NEXT_PUBLIC_API_URL}/api/user`,
-    { "X-rasmus": "rasmus", credentials: "include" }
+    {
+      credentials: "include",
+
+      "X-rasmus": "rasmus",
+      Authorization:
+        "Bearer: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsInJvbGUiOiJEZXZlbG9wZXIiLCJpYXQiOjE3MzI5MDI4NTQsInNlc3Npb25JZCI6IjUtMTczMjkwMjg1NDY2MCIsImlzcyI6IllBUiBzb2x1dGlvbnMiLCJleHAiOjE3MzI5MDY0NTR9.zFiwWifiLc_ku8r8ZSq_SpNf2AGHBfNnI5CYvoLxkbI",
+    }
   );
   return await handleResponse(response);
 }
