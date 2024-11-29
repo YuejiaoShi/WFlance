@@ -1,4 +1,4 @@
-// Inside [id]/page.js
+"use client";
 
 // This is required for static export with dynamic routes
 export async function generateStaticParams() {
@@ -11,8 +11,6 @@ export async function generateStaticParams() {
     id: project.id.toString(), // Ensure the ID is a string, as dynamic routes use strings
   }));
 }
-
-("use client");
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";

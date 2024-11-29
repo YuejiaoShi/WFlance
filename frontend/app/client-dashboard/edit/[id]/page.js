@@ -1,4 +1,5 @@
-// This is required for static export with dynamic routes
+"use client";
+
 export async function generateStaticParams() {
   // Replace this with your logic to fetch all the possible project IDs
   const res = await fetch("/api/projects"); // Assuming your API endpoint returns a list of projects
@@ -9,8 +10,6 @@ export async function generateStaticParams() {
     id: project.id.toString(), // Ensure the ID is a string, as dynamic routes use strings
   }));
 }
-
-("use client");
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";

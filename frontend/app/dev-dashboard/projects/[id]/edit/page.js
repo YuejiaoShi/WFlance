@@ -1,4 +1,4 @@
-// Inside edit/[id]/page.js
+"use client";
 
 // This is required for static export with dynamic routes
 export async function generateStaticParams() {
@@ -12,7 +12,6 @@ export async function generateStaticParams() {
   }));
 }
 
-("use client");
 import Breadcrumbs from "@/app/_components/DevDashboard/Breadcrumbs";
 import { getProjectById, updateProjectById } from "@/app/utils/projectUtil";
 import { use, useEffect, useState } from "react";
