@@ -26,15 +26,25 @@ setupSockets(server);
 
 app.use(
   cors({
-    // origin: process.env.NEXT_PUBLIC_CLIENT_URL,
-    // credentials: true,
-    origin: "*", // Allow any origin (use for testing only)
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        "https://homepage-frontend.d1raf63sxampba.amplifyapp.com",
+        "https://w-flance.vercel.app",
+      ];
+
+      if (allowedOrigins.includes(origin) || !origin) {
+        // Allow requests with no origin (e.g., curl, Postman)
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"), false);
+      }
+    },
     methods: ["GET", "POST", "DELETE"], // Allow specific HTTP methods
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
-app.options("*", cors());
+// app.options("*", cors());
 
 app.use(bodyParser.json());
 app.use(cookieParser());
