@@ -2,10 +2,10 @@ import SubscribeEmail from "../models/subscribeEmail.js";
 
 const subscribeEmail = async (email) => {
   try {
-    // const emailExists = await SubscribeEmail.findOne({
-    //   where: { email: email },
-    // });
-    //if (emailExists) throw new Error("email is already subscribed");
+    const emailExists = await SubscribeEmail.findOne({
+      where: { email: email },
+    });
+    if (emailExists) throw new Error("email is already subscribed");
 
     const createEmail = await SubscribeEmail.create({
       email,
