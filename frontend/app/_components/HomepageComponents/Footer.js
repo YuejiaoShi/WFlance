@@ -61,13 +61,16 @@ const Footer = () => {
     try {
       setEmailStatus("Subscribing...");
 
-      const response = await fetch("/api/subscribeEmail", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email: sanitizedEmail }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/subscribeEmail`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: sanitizedEmail }),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
