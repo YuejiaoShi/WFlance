@@ -4,52 +4,14 @@ frontend:
     preBuild:
       commands:
         - "cd frontend" # Navigate to the frontend directory
-        - "npm install --include=optional sharp" # Install frontend dependencies
+        - "npm install --include=optional sharp" # Install dependencies
     build:
       commands:
         - "npm run build" # Build the Next.js app
   artifacts:
     baseDirectory: frontend/out # Adjusted to match your folder structure
     files:
-      - "**/*" # Include all files in the frontend build folder
+      - "**/*" # Include all files in the .next directory
   cache:
     paths:
-      - "frontend/node_modules/**/*" # Cache frontend node_modules to speed up builds
-
-backend:
-  phases:
-    preBuild:
-      commands:
-        - "cd api" # Navigate to the backend directory
-        - "npm install" # Install backend dependencies
-    build:
-      commands:
-        - "npm run build" # Run build command if needed
-        - "node api/index.js" # Start the backend server (e.g., if you need to start a Node server)
-  artifacts:
-    baseDirectory: api # Specify the backend artifact directory (if any)
-    files:
-      - "**/*" # Include all files in the backend folder (or specify specific files if needed)
-  cache:
-    paths:
-      - "api/node_modules/**/*" # Cache backend node_modules to speed up builds
-
-# Define environment variables here
-env:
-  variables:
-    PORT: 3001
-    DB_CLIENT: pg
-    DB_HOST: finalprojectdb.cziccw2487yw.us-east-1.rds.amazonaws.com
-    DB_PORT: 5432
-    DB_USER: administrator
-    DB_PASSWORD: administrator
-    DB_DATABASE_NAME: FinalProjectDb
-    DB_USE_SSL: "true"
-    CLIENT_URL_CHAT: 127.0.0.1:3001/api/chat
-    JWT_SECRET: 40bec2a3e0476897ce2c1d111b4533dbf3391ebd3e2d950b3e79ba98cf6904b61b09ad1eafe471fbb26a79991a997b130181a75ba6c755c067d04ccab384ab13
-    AWS_ACCESS_KEY_ID: your-access-key-id
-    AWS_SECRET_ACCESS_KEY: your-secret-access-key
-    AWS_REGION: us-east-1
-    AWS_ACCES_POINT: final-project-server-59ekudtamn91bhoppk6bzn85kdbgguse1a-s3alias
-    AWS_OWNER_ID: 688567259733
-    AWS_S3_URL: s3://arn:aws:s3:us-east-1:688567259733:accesspoint/final-project-server
+      - "frontend/node_modules/**/*" # Cache node_modules to speed up builds
