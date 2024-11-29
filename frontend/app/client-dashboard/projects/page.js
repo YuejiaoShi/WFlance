@@ -31,9 +31,7 @@ export default function Page() {
           setError("Failed to fetch user data");
         }
       } catch (error) {
-        setError(
-          "Error fetching user data: " + error.message
-        );
+        setError("Error fetching user data: " + error.message);
       }
     };
 
@@ -45,25 +43,18 @@ export default function Page() {
 
     const fetchProjects = async () => {
       try {
-        const response = await fetch(
-          `/api/projects/client/${userId}`,
-          {
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`/api/projects/client/${userId}`, {
+          credentials: "include",
+        });
         if (response.ok) {
           const projectData = await response.json();
           console.log(projectData);
           setProjects(projectData);
         } else {
-          setError(
-            `Failed to fetch projects: ${response.statusText}`
-          );
+          setError(`Failed to fetch projects: ${response.statusText}`);
         }
       } catch (error) {
-        setError(
-          `Error fetching projects: ${error.message}`
-        );
+        setError(`Error fetching projects: ${error.message}`);
       }
     };
 
@@ -81,15 +72,10 @@ export default function Page() {
         const projectData = await response.json();
 
         setProjects((prevProjects) =>
-          prevProjects.filter(
-            (project) => project.id !== id
-          )
+          prevProjects.filter((project) => project.id !== id)
         );
       } else {
-        console.error(
-          "Failed to delete project:",
-          response.statusText
-        );
+        console.error("Failed to delete project:", response.statusText);
       }
     } catch (error) {
       console.error("Error deleting project:", error);
@@ -107,13 +93,11 @@ export default function Page() {
           You do not have any projects.
         </h2>
         <p className="text-gray-600 text-center mb-6">
-          Start organizing your work by creating a new
-          project. Once you create one, it will appear here.
+          Start organizing your work by creating a new project. Once you create
+          one, it will appear here.
         </p>
         <button
-          onClick={() =>
-            router.push("/client-dashboard/create-project")
-          }
+          onClick={() => router.push("/client-dashboard/create-project")}
           className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg shadow hover:bg-blue-700 transition"
         >
           Create a New Project
