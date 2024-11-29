@@ -1,8 +1,8 @@
 import ClientList from "@/app/_components/client-dashboard-components/ClientList";
 
-export const metadata = {
-  title: "clients",
-};
+// export const metadata = {
+//   title: "clients",
+// };
 
 function Page() {
   return (
