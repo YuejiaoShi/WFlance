@@ -4,7 +4,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import http from "http";
-//import https from "https";
+
 import nestedRouter from "./routers/nested.js";
 import userRouter from "./routers/userRoutes.js";
 import authRouter from "./routers/authRouter.js";
@@ -22,7 +22,9 @@ import subscribeEmailRouter from "./routers/suscribeEmailRouter.js";
 const app = express();
 
 const server = http.createServer(app);
+
 setupSockets(server);
+
 app.use(
   cors({
     origin: (origin, callback) => {
