@@ -35,5 +35,19 @@ class ChatController {
       res.status(500).json({ error: error.message });
     }
   }
+
+  static async getListOfActiveChatUsers(req, res) {
+    const { userId } = req.params;
+    try {
+      const getList = await ChatService.getListOfActiveChatUsers({
+        where: {
+          [Sequelize.Op.or]: [{ senderId: userId }, { receiverId: userId }],
+        },
+      });
+      res.status(200).json(getList);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 }
 export default ChatController;

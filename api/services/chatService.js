@@ -18,6 +18,17 @@ class ChatService {
       throw new Error("Error sending messages: " + error.message);
     }
   }
+
+  static async getListOfActiveChatUsers(data) {
+    try {
+      const getMessages = await Message.findAll(data);
+      return getMessages;
+    } catch (error) {
+      throw new Error(
+        "Error fetching list of active chat users: " + error.message
+      );
+    }
+  }
 }
 
 export default ChatService;
