@@ -9,7 +9,7 @@ const LogInPage = () => {
   return (
     <div className='min-h-screen flex flex-col justify-center items-center bg-gradient-to-r from-blue-500 via-purple-600 to-blue-500 p-4'>
       <div className='bg-white shadow-lg rounded-lg p-8 max-w-lg w-full'>
-        <h1 className='text-3xl font-bold text-gray-800 text-center mb-6'>Welcome to WFlance!</h1>
+        <h1 className='text-3xl font-bold text-gray-800 text-center mb-6'>Welcome to WEflance!</h1>
 
         <LogIn error={error} role={role} />
 
