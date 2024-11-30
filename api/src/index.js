@@ -30,6 +30,7 @@ app.use(
         "https://homepage-frontend.d1raf63sxampba.amplifyapp.com",
         "https://w-flance.vercel.app",
         "http://127.0.0.1:3000",
+        "http://localhost:3000",
       ];
 
       if (allowedOrigins.includes(origin) || !origin) {
