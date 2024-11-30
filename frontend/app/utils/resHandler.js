@@ -1,5 +1,6 @@
 import { toast } from "react-toastify";
 
+// Handle the response from the server, including success and error handling
 export async function handleResponse(
   response,
   successCallback = defaultSuccessCallback,
@@ -31,11 +32,13 @@ export async function handleResponse(
   }
 }
 
+// Default callback functions
 export const defaultSuccessCallback = (result) => {};
 export const defaultErrorCallback = (errorText) => {
   toast.error(errorText);
 };
 
+// Send a POST request with JSON body
 export async function sendPostJsonRequest(
   url,
   data = {},
@@ -45,12 +48,16 @@ export async function sendPostJsonRequest(
   return await fetch(url, {
     ...optionsFields,
     method: "POST",
-    headers: { ...optionsHeaders, "Content-Type": "application/json" },
+    headers: {
+      ...optionsHeaders,
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(data),
-    mode: "cors",
+    credentials: "include", // Ensure cookies are sent with the request
   });
 }
 
+// Send a GET request
 export async function sendGetRequest(
   url,
   optionsHeaders = {},
@@ -60,10 +67,11 @@ export async function sendGetRequest(
     ...optionsFields,
     method: "GET",
     headers: optionsHeaders,
-    mode: "cors",
+    credentials: "include", // Ensure cookies are sent with the request
   });
 }
 
+// Send a DELETE request
 export async function sendDeleteRequest(
   url,
   optionsHeaders = {},
@@ -73,6 +81,6 @@ export async function sendDeleteRequest(
     ...optionsFields,
     method: "DELETE",
     headers: optionsHeaders,
-    mode: "cors",
+    credentials: "include", // Ensure cookies are sent with the request
   });
 }
