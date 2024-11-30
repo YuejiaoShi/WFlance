@@ -4,6 +4,8 @@ import { getFieldFromCookie } from '@/app/utils/auth';
 import { getAllClientsFromDeveloper } from '@/app/utils/chatUtil';
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
+import { PaperAirplaneIcon } from '@heroicons/react/24/solid';
+import { toast } from 'react-toastify';
 
 const Chat = () => {
   const socketRef = useRef(null);
@@ -17,12 +19,12 @@ const Chat = () => {
 
   const [buttonCont, setButtonCont] = useState('Send Event');
 
-  // Format clients
-  const formatClients = clients =>
-    clients.map(client => ({
-      name: client.client.name,
-      id: client.clientId,
-    }));
+  // // Format clients
+  // const formatClients = clients =>
+  //   clients.map(client => ({
+  //     name: client.client.name,
+  //     id: client.clientId,
+  //   }));
 
   const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
 
@@ -40,9 +42,9 @@ const Chat = () => {
 
         setSenderId(userId);
 
-        const allClients = await getAllClientsFromDeveloper(userId);
-        setClients(formatClients(allClients));
-        console.log('Fetched all clients:', allClients);
+        // const allClients = await getAllClientsFromDeveloper(userId);
+        // setClients(formatClients(allClients));
+        // console.log('Fetched all clients:', allClients);
       } catch (error) {
         console.error('Error initializing chat:', error);
       }
@@ -110,17 +112,6 @@ const Chat = () => {
     };
   }, []);
 
-  const sendSocketEvents = () => {
-    const socket = socketRef.current;
-    if (!socket) {
-      console.error('Socket not initialized!');
-      return;
-    }
-
-    console.log("Button pressed. Emitting 'myevent'.");
-    socket.emit('myevent', 'Hello Server');
-  };
-
   const joinRoom = (specificRoomName = null) => {
     const socket = socketRef.current;
     if (!socket) {
@@ -129,19 +120,27 @@ const Chat = () => {
     }
 
     if (!receiverId && !specificRoomName) {
-      alert('Please select or enter a receiver!');
+      toast.info('Please select or enter a receiver!');
       return;
     }
 
     if (!senderId) {
-      alert('Sender ID is missing!');
+      toast.info('Sender ID is missing!');
       return;
     }
 
+    setClients(prevClients => [...prevClients, { id: receiverId, name: `User ${receiverId}` }]);
+
     const room = specificRoomName || `${senderId}_${receiverId}`;
     setRoomName(room);
-
     console.log(`Joining room: ${room}`);
+    socket.emit('joinRoom', { senderId, receiverId });
+    socket.emit('fetchMessages', { senderId, receiverId });
+  };
+
+  const handleClientsClick = ({ senderId, receiverId }) => {
+    const socket = socketRef.current;
+    setRoomName(`${senderId}_${receiverId}`);
     socket.emit('joinRoom', { senderId, receiverId });
     socket.emit('fetchMessages', { senderId, receiverId });
   };
@@ -156,12 +155,12 @@ const Chat = () => {
     console.log('sendMessage function called');
 
     if (!messageInput.trim()) {
-      alert('Message cannot be empty!');
+      toast.info('Message cannot be empty!');
       return;
     }
 
     if (!roomName) {
-      alert('Join a room first!');
+      toast.info('Join a room first');
       return;
     }
 
@@ -179,13 +178,13 @@ const Chat = () => {
   };
 
   return (
-    <div className='w-full h-full bg-gray-100'>
-      <div className='flex p-10 h-full flex-col mx-auto max-w-screen-xl'>
-        <div className='flex flex-grow bg-white shadow-lg rounded-2xl'>
+    <div className='w-full h-full flex-1 bg-gray-100'>
+      <div className='flex sm:p-10 p-0 flex-col mx-auto  max-w-screen-xl h-full'>
+        <div className='flex h-full bg-white shadow-lg rounded-2xl'>
           {/* Sidebar */}
           <div className='w-1/4 flex flex-col border-r-2 border-gray-100'>
             <div className='p-4'>
-              <h2 className='text-xl font-bold text-primary-blue-dark'>Chat App</h2>
+              <h2 className='text-xl font-bold text-primary-blue-dark'>WEflance Chat</h2>
             </div>
             <div className='p-4'>
               <label htmlFor='receiverId' className='block font-medium mb-2'>
@@ -196,12 +195,15 @@ const Chat = () => {
                 id='receiverId'
                 value={receiverId || ''}
                 onChange={e => setReceiverId(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') joinRoom();
+                }}
                 placeholder='Enter receiver ID'
                 className='w-full border rounded-lg px-3 py-2 mb-4'
               />
               <button
                 onClick={() => joinRoom()}
-                className='w-full bg-primary-blue-dark text-white py-2 rounded-lg hover:bg-primary-blue'
+                className='w-full bg-primary-blue text-white py-2 rounded-lg hover:bg-primary-accent-light'
               >
                 Start Chat
               </button>
@@ -214,7 +216,7 @@ const Chat = () => {
                   <li
                     key={index}
                     className='p-2 bg-gray-200 rounded-lg cursor-pointer hover:bg-gray-300'
-                    onClick={() => joinRoom(`${senderId}_${client.id}`)}
+                    onClick={() => handleClientsClick({ senderId, receiverId: client.id })}
                   >
                     Chat with {client.name || `User ${client.id}`}
                   </li>
@@ -224,25 +226,44 @@ const Chat = () => {
           </div>
 
           {/* Chat Section */}
-          <div className='flex-1 flex flex-col'>
+          <div className='flex-grow flex flex-col max-w-full'>
+            {/* Header */}
             <div className='p-4 flex items-center border-b-2 border-gray-100'>
               <h3 className='text-lg font-semibold'>Chat Room: {roomName || 'No room joined'}</h3>
             </div>
-            <div className='flex-1 overflow-y-auto bg-gray-50 p-4'>
-              {(messagesByRoom[roomName] || []).map((msg, index) => (
-                <div
-                  key={index}
-                  className={`mb-2 p-3 rounded-lg max-w-md ${
-                    msg.senderId === senderId ? 'bg-primary-purple text-white ml-auto' : 'bg-gray-200 text-black'
-                  }`}
-                >
-                  <strong>{msg.senderId === senderId ? 'You' : `User ${msg.senderId}`}:</strong> {msg.message}
-                </div>
-              ))}
+
+            {/* Chat Messages */}
+            <div
+              className='flex-grow flex flex-col bg-gray-50 p-4 overflow-y-auto'
+              style={{ maxHeight: 'calc(100vh - 200px)' }}
+            >
+              {(messagesByRoom[roomName] || []).map((msg, index) => {
+                const receiverName = clients.find(client => client.id === msg.senderId)?.name;
+
+                return (
+                  <div
+                    key={index}
+                    className={`mb-2 p-3 rounded-lg break-words ${
+                      Number(msg.senderId) === Number(senderId)
+                        ? 'bg-primary-purple text-white ml-auto'
+                        : 'bg-gray-200 text-black'
+                    }`}
+                  >
+                    <strong>
+                      {Number(msg.senderId) === Number(senderId)
+                        ? 'You'
+                        : receiverName
+                        ? receiverName
+                        : `User ${msg.senderId}`}
+                    </strong>
+                    : {msg.message}
+                  </div>
+                );
+              })}
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input */}
+            {/* Input Section */}
             <div className='p-4 border-t-2 border-gray-100 flex items-center'>
               <input
                 type='text'
@@ -250,9 +271,17 @@ const Chat = () => {
                 onChange={e => setMessageInput(e.target.value)}
                 placeholder='Type a message...'
                 className='flex-1 border rounded-lg px-3 py-2 mr-2'
+                onKeyDown={e => {
+                  if (e.key === 'Enter') sendMessage();
+                }}
+                aria-label='Message input'
               />
-              <button onClick={sendMessage} className='bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600'>
-                Send
+              <button
+                onClick={sendMessage}
+                className='bg-gray-100 text-white py-2 px-4 rounded-lg hover:bg-gray-200'
+                aria-label='Send message'
+              >
+                <PaperAirplaneIcon className='h-6 w-6 text-primary-blue' aria-hidden='true' />
               </button>
             </div>
           </div>
