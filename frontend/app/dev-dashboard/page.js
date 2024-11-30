@@ -34,7 +34,7 @@ const DevDashboard = () => {
   }, []);
 
   return (
-    <div className='flex flex-col md:gap-6 gap-4 my-4 p-4 mx-auto max-w-4xl h-full'>
+    <div className='flex flex-col md:gap-6 gap-4 my-4 p-4 mx-auto max-w-4xl '>
       <div className='flex md:flex-row flex-col gap-4'>
         <div className='flex-1 hover:shadow-xl' onClick={() => router.push('/dev-dashboard/chat')}>
           <ChatCard />
