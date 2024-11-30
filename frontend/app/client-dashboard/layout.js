@@ -4,8 +4,8 @@ import Header from "../_components/client-dashboard-components/Header";
 
 export const metadata = {
   title: {
-    template: "%s WFlance",
-    default: "Welcom/ WFlance",
+    template: "%s WEflance",
+    default: "Welcom/ WEflance",
   },
   description: "Freelance web developer Platform",
 };

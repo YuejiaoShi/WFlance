@@ -123,7 +123,6 @@ const DevProjectsList = () => {
     handleAssignProjectToDeveloper(selectedProject.id, developerId);
     setSelectedProject(null);
   };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
@@ -131,14 +130,14 @@ const DevProjectsList = () => {
       transition={{ duration: 0.5 }}
       className='w-full max-w-4xl mx-auto'
     >
-      <Card>
+      <Card className='bg-gray-50 shadow-md rounded-lg'>
         <CardHeader>
           <CardTitle className='flex items-center space-x-4'>
             <Rocket className='w-8 h-8 text-primary' />
-            <span>Available Projects</span>
+            <span className='text-xl font-bold'>Available Projects</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className='md:p-4 p-2'>
           <AnimatePresence>
             <div className='space-y-4'>
               {currentProjects.map(project => (
@@ -156,26 +155,30 @@ const DevProjectsList = () => {
                     stiffness: 300,
                     damping: 10,
                   }}
-                  className='flex items-center justify-between p-4 border rounded-lg bg-background hover:bg-accent/10 cursor-pointer'
+                  className='flex md:flex-row flex-col justify-between p-4 border rounded-lg bg-white hover:bg-gray-100 cursor-pointer'
                 >
-                  <div className='flex items-center space-x-4'>
+                  <div className='flex items-center space-x-1 w-full sm:w-auto'>
                     {getProjectIcon(project.type)}
                     <div>
-                      <h3 className='text-lg font-semibold'>{project.title}</h3>
-                      <div className='flex items-center space-x-2 mt-1'>
-                        <Badge variant={getStatusBadgeVariant(project.status)}>{project.status}</Badge>
-                        {project.budget ? (
-                          <Badge className='bg-white text-black border'>€ {Number(project.budget).toFixed(0)}</Badge>
-                        ) : null}
-                        {project.client ? (
-                          <Badge className='bg-white text-black border'>{project.client.name}</Badge>
-                        ) : null}
-                        {project.deadline ? (
-                          <Badge className='bg-white text-black border'>{project.deadline} end</Badge>
-                        ) : null}
+                      <h3 className='md:text-lg text-md font-semibold text-gray-800'>{project.title}</h3>
+                      <div className='flex flex-wrap items-center space-x-2 mt-2 mb-2'>
+                        <Badge variant={getStatusBadgeVariant(project.status)} className='mb-1'>
+                          {project.status}
+                        </Badge>
+                        {project.budget && (
+                          <Badge className='bg-blue-100 text-blue-600 mb-1'>
+                            € {Number(project.budget).toFixed(0)}
+                          </Badge>
+                        )}
+                        {project.client && (
+                          <Badge className='bg-green-100 text-green-600 mb-1'>{project.client.name}</Badge>
+                        )}
+                        {project.deadline && (
+                          <Badge className='bg-yellow-100 text-yellow-600 mb-1'>{project.deadline} end</Badge>
+                        )}
                         {project.tags &&
                           project.tags.map(tag => (
-                            <Badge key={tag} variant='outline' className='text-xs'>
+                            <Badge key={tag} variant='outline' className='text-xs text-gray-600 border-gray-300'>
                               {tag}
                             </Badge>
                           ))}
@@ -183,10 +186,9 @@ const DevProjectsList = () => {
                     </div>
                   </div>
                   <Button
-                    asChild
                     variant='outline'
                     onClick={() => handleApplyToProject(project)}
-                    className='ml-4 hover:bg-primary hover:text-primary-foreground transition-colors'
+                    className='hover:bg-primary hover:text-white transition-colors px-4 py-2 w-auto sm:w-fit'
                   >
                     <motion.div whileTap={{ scale: 0.95 }}>Take on Project</motion.div>
                   </Button>
@@ -198,7 +200,7 @@ const DevProjectsList = () => {
             <Button disabled={currentPage === 1} onClick={handlePreviousPage}>
               Previous
             </Button>
-            <span>
+            <span className='text-gray-600'>
               Page {currentPage} of {totalPages}
             </span>
             <Button disabled={currentPage === totalPages} onClick={handleNextPage}>
@@ -207,60 +209,6 @@ const DevProjectsList = () => {
           </div>
         </CardContent>
       </Card>
-
-      {/* Optional Project Details Modal */}
-      <AnimatePresence>
-        {selectedProject && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'
-            onClick={() => setSelectedProject(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className='bg-white p-6 rounded-lg max-w-md w-full m-4'
-              onClick={e => e.stopPropagation()}
-            >
-              <h2 className='text-2xl font-bold mb-4 text-center'>{selectedProject.title}</h2>
-              <div className='flex justify-center mb-4'>
-                <div className='bg-red-100 rounded-full p-4'>
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    className='h-10 w-10 text-red-600'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke='currentColor'
-                  >
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      strokeWidth={2}
-                      d='M12 9v3m0 4h.01M12 2a10 10 0 110 20 10 10 0 010-20z'
-                    />
-                  </svg>
-                </div>
-              </div>
-
-              <p className='mb-6 text-center text-gray-700'>Are you sure you want to take on this project?</p>
-              <div className='flex justify-center gap-6'>
-                <Button
-                  className='w-full bg-primary-blue text-white py-2 px-4 rounded-md hover:bg-primary-blue-dark transition'
-                  onClick={handleTakeOnProject}
-                >
-                  Yes 🚀
-                </Button>
-                <Button onClick={() => setSelectedProject(null)} className='w-full'>
-                  Cancel
-                </Button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.div>
   );
 };
