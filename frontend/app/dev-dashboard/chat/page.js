@@ -1,30 +1,26 @@
 'use client';
 
 import { getFieldFromCookie } from '@/app/utils/auth';
-import { getAllClientsFromDeveloper } from '@/app/utils/chatUtil';
+import { getAllMessagesFromDeveloper } from '@/app/utils/chatUtil';
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import { PaperAirplaneIcon } from '@heroicons/react/24/solid';
 import { toast } from 'react-toastify';
+import { extractOtherUsers, getConversationIdFromMessages, groupMessagesByConversation } from '@/lib/chatHelpers';
 
 const Chat = () => {
   const socketRef = useRef(null);
-  const [clients, setClients] = useState([]);
   const [senderId, setSenderId] = useState(null);
   const [receiverId, setReceiverId] = useState('');
-  const [roomName, setRoomName] = useState(null);
+  const [allMessages, setAllMessages] = useState([]);
+  const [combinedRoom, setCombinedRoom] = useState('');
   const [messagesByRoom, setMessagesByRoom] = useState({});
+  const [conversationId, setConversationId] = useState(null);
+  const [receiverInput, setReceiverInput] = useState('');
+
+  const [clients, setClients] = useState([]);
   const [messageInput, setMessageInput] = useState('');
   const messagesEndRef = useRef(null);
-
-  const [buttonCont, setButtonCont] = useState('Send Event');
-
-  // // Format clients
-  // const formatClients = clients =>
-  //   clients.map(client => ({
-  //     name: client.client.name,
-  //     id: client.clientId,
-  //   }));
 
   const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
 
@@ -33,146 +29,112 @@ const Chat = () => {
     socketRef.current = socket;
 
     const initializeChat = async () => {
-      try {
-        const userId = getFieldFromCookie('userId');
-        if (!userId) {
-          console.warn('userId not found in cookie');
-          return;
-        }
-
-        setSenderId(userId);
-
-        // const allClients = await getAllClientsFromDeveloper(userId);
-        // setClients(formatClients(allClients));
-        // console.log('Fetched all clients:', allClients);
-      } catch (error) {
-        console.error('Error initializing chat:', error);
+      const loggedInUserId = getFieldFromCookie('userId');
+      if (!loggedInUserId) {
+        console.warn('userId not found in cookie');
+        return;
       }
+      setSenderId(loggedInUserId);
+
+      const activeChatHistory = await getAllMessagesFromDeveloper(loggedInUserId);
+      setAllMessages(activeChatHistory);
+
+      const otherUsers = extractOtherUsers(activeChatHistory, loggedInUserId); // [6,8]
+      setClients(otherUsers);
+
+      const groupedMessages = groupMessagesByConversation(activeChatHistory);
+      setMessagesByRoom(groupedMessages);
     };
 
     initializeChat();
 
-    // Wrap `socket.on` to log events
-    const originalOn = socket.on;
-    socket.on = function (event, callback) {
-      console.log(`Listening to event: ${event}`);
-      return originalOn.call(this, event, callback);
-    };
-
-    // Log all incoming events
-    socket.onAny((event, ...args) => {
-      console.log(`Received event: ${event}, data:`, args);
-    });
-
     socket.on('connect', () => {
       console.log('Connected to server!', socket.id);
-      socket.emit('howdy', 'stranger');
-    });
-
-    socket.on('hello', msg => {
-      console.log('hello hahah!', msg);
-    });
-
-    socket.on('responseEvent', data => {
-      console.log('Received response from server:', data);
-      setButtonCont(`Received: ${data}`);
     });
 
     socket.on('receiveMessage', message => {
-      console.log('Received message:', message);
       setMessagesByRoom(prev => ({
         ...prev,
-        [message.roomName]: [...(prev[message.roomName] || []), message],
+        [message.conversationId]: [...(prev[message.conversationId] || []), message],
       }));
     });
 
     socket.on('chatHistory', chatMessages => {
-      console.log('Received chat history:', chatMessages);
-
-      // Group messages by room
       const groupedMessages = chatMessages.reduce((acc, msg) => {
-        const room = `${msg.senderId}_${msg.receiverId}`;
-        if (!acc[room]) acc[room] = [];
-        acc[room].push(msg);
+        if (!acc[msg.conversationId]) acc[msg.conversationId] = [];
+        acc[msg.conversationId].push(msg);
         return acc;
       }, {});
 
-      // Update state with grouped messages
       setMessagesByRoom(prev => ({
         ...prev,
         ...groupedMessages,
       }));
-
-      console.log('Grouped Messages by Room:', groupedMessages);
     });
+
+    if (receiverId) {
+      joinRoom(receiverId);
+    }
 
     return () => {
       console.log('Disconnecting socket...');
       socket.disconnect();
     };
-  }, []);
+  }, [receiverId]);
 
-  const joinRoom = (specificRoomName = null) => {
+  useEffect(() => {
+    const socket = socketRef.current;
+    socket.emit('fetchMessages', { senderId, receiverId });
+    scrollToBottom();
+  }, [messagesByRoom]);
+
+  const joinRoom = inputUserId => {
     const socket = socketRef.current;
     if (!socket) {
       console.error('Socket not initialized!');
       return;
     }
 
-    if (!receiverId && !specificRoomName) {
-      toast.info('Please select or enter a receiver!');
-      return;
-    }
+    setReceiverId(inputUserId);
 
-    if (!senderId) {
-      toast.info('Sender ID is missing!');
-      return;
-    }
+    const conversationId = getConversationIdFromMessages(allMessages, inputUserId, senderId);
 
-    setClients(prevClients => [...prevClients, { id: receiverId, name: `User ${receiverId}` }]);
+    setCombinedRoom(`${senderId}_${inputUserId}`);
+    setConversationId(conversationId);
 
-    const room = specificRoomName || `${senderId}_${receiverId}`;
-    setRoomName(room);
-    console.log(`Joining room: ${room}`);
-    socket.emit('joinRoom', { senderId, receiverId });
-    socket.emit('fetchMessages', { senderId, receiverId });
+    socket.emit('joinRoom', { senderId, inputUserId });
   };
 
-  const handleClientsClick = ({ senderId, receiverId }) => {
-    const socket = socketRef.current;
-    setRoomName(`${senderId}_${receiverId}`);
-    socket.emit('joinRoom', { senderId, receiverId });
-    socket.emit('fetchMessages', { senderId, receiverId });
-  };
-
-  const sendMessage = () => {
+  const sendMessage = async () => {
     const socket = socketRef.current;
     if (!socket) {
       console.error('Socket not initialized!');
       return;
     }
-
-    console.log('sendMessage function called');
 
     if (!messageInput.trim()) {
       toast.info('Message cannot be empty!');
       return;
     }
 
-    if (!roomName) {
+    if (!combinedRoom) {
       toast.info('Join a room first');
       return;
     }
 
     const message = { senderId, receiverId, message: messageInput };
-    console.log('Sending message:', message);
-
     socket.emit('sendMessage', message);
+
+    const activeChatHistory = await getAllMessagesFromDeveloper(senderId);
+    setAllMessages(activeChatHistory);
+
+    const conversationId = getConversationIdFromMessages(allMessages, receiverId, senderId);
 
     setMessagesByRoom(prev => ({
       ...prev,
-      [roomName]: [...(prev[roomName] || []), { ...message, senderId }],
+      [conversationId]: [...(prev[conversationId] || []), message],
     }));
+
     setMessageInput('');
     scrollToBottom();
   };
@@ -190,23 +152,33 @@ const Chat = () => {
               <label htmlFor='receiverId' className='block font-medium mb-2'>
                 Chat with:
               </label>
-              <input
-                type='number'
-                id='receiverId'
-                value={receiverId || ''}
-                onChange={e => setReceiverId(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') joinRoom();
+              <form
+                onSubmit={e => {
+                  e.preventDefault();
+                  joinRoom(receiverInput);
                 }}
-                placeholder='Enter receiver ID'
-                className='w-full border rounded-lg px-3 py-2 mb-4'
-              />
-              <button
-                onClick={() => joinRoom()}
-                className='w-full bg-primary-blue text-white py-2 rounded-lg hover:bg-primary-accent-light'
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    joinRoom(receiverInput);
+                  }
+                }}
               >
-                Start Chat
-              </button>
+                <input
+                  type='number'
+                  id='receiverId'
+                  value={receiverInput}
+                  onChange={e => setReceiverInput(e.target.value)}
+                  placeholder='Enter receiver ID'
+                  className='w-full border rounded-lg px-3 py-2 mb-4'
+                />
+                <button
+                  className='w-full bg-primary-blue text-white py-2 rounded-lg hover:bg-primary-accent-light'
+                  type='submit'
+                >
+                  Start Chat
+                </button>
+              </form>
             </div>
             {/* Chat List */}
             <div className='p-4'>
@@ -216,9 +188,9 @@ const Chat = () => {
                   <li
                     key={index}
                     className='p-2 bg-gray-200 rounded-lg cursor-pointer hover:bg-gray-300'
-                    onClick={() => handleClientsClick({ senderId, receiverId: client.id })}
+                    onClick={() => setReceiverId(client)}
                   >
-                    Chat with {client.name || `User ${client.id}`}
+                    Chat with {client || `User ${client}`}
                   </li>
                 ))}
               </ul>
@@ -229,7 +201,7 @@ const Chat = () => {
           <div className='flex-grow flex flex-col max-w-full'>
             {/* Header */}
             <div className='p-4 flex items-center border-b-2 border-gray-100'>
-              <h3 className='text-lg font-semibold'>Chat Room: {roomName || 'No room joined'}</h3>
+              <h3 className='text-lg font-semibold'>Chat Room: {combinedRoom || 'No room joined'}</h3>
             </div>
 
             {/* Chat Messages */}
@@ -237,7 +209,7 @@ const Chat = () => {
               className='flex-grow flex flex-col bg-gray-50 p-4 overflow-y-auto'
               style={{ maxHeight: 'calc(100vh - 200px)' }}
             >
-              {(messagesByRoom[roomName] || []).map((msg, index) => {
+              {(messagesByRoom[conversationId] || []).map((msg, index) => {
                 const receiverName = clients.find(client => client.id === msg.senderId)?.name;
 
                 return (
@@ -250,11 +222,7 @@ const Chat = () => {
                     }`}
                   >
                     <strong>
-                      {Number(msg.senderId) === Number(senderId)
-                        ? 'You'
-                        : receiverName
-                        ? receiverName
-                        : `User ${msg.senderId}`}
+                      {Number(msg.senderId) === Number(senderId) ? 'You' : receiverName || `User ${msg.senderId}`}
                     </strong>
                     : {msg.message}
                   </div>

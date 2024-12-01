@@ -11,7 +11,7 @@ const nabla = Nabla({
 function Logo({ className }) {
   return (
     <Link href='/' className={`${nabla.className} flex items-center gap-2 z-10 ${className}`}>
-      <span className='text-3xl'>WFlance</span>
+      <span className='text-3xl'>WEflance</span>
     </Link>
   );
 }
