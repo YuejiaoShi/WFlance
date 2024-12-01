@@ -1,188 +1,196 @@
-"use client";
+'use client';
 
-import { getFieldFromCookie } from "@/app/utils/auth";
-import { getAllClientsFromDeveloper } from "@/app/utils/chatUtil.js";
-import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
-import React, { useState, useEffect, useRef } from "react";
-import io from "socket.io-client";
+import { getFieldFromCookie } from '@/app/utils/auth';
+import { getAllMessagesFromDeveloper } from '@/app/utils/chatUtil';
+import React, { useState, useEffect, useRef } from 'react';
+import io from 'socket.io-client';
+import { PaperAirplaneIcon } from '@heroicons/react/24/solid';
+import { toast } from 'react-toastify';
+import { extractOtherUsers, getConversationIdFromMessages, groupMessagesByConversation } from '@/lib/chatHelpers';
 
 const Chat = () => {
-  const [socket, setSocket] = useState(null);
-  const [clients, setClients] = useState([]);
+  const socketRef = useRef(null);
   const [senderId, setSenderId] = useState(null);
-  const [receiverId, setReceiverId] = useState("");
-  const [roomName, setRoomName] = useState(null);
+  const [receiverId, setReceiverId] = useState('');
+  const [allMessages, setAllMessages] = useState([]);
+  const [combinedRoom, setCombinedRoom] = useState('');
   const [messagesByRoom, setMessagesByRoom] = useState({});
-  const [messageInput, setMessageInput] = useState("");
+  const [conversationId, setConversationId] = useState(null);
+  const [receiverInput, setReceiverInput] = useState('');
+
+  const [clients, setClients] = useState([]);
+  const [messageInput, setMessageInput] = useState('');
   const messagesEndRef = useRef(null);
 
-  // Format clients
-  const formatClients = (clients) => {
-    return clients.map((client) => ({
-      name: client.client.name,
-      id: client.clientId,
-    }));
-  };
+  const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
 
-  // Initialize chat
   useEffect(() => {
-    const initializeChat = async () => {
-      try {
-        const userId = getFieldFromCookie("userId");
-        if (userId) setSenderId(userId);
+    const socket = io('wss://wflance-production.up.railway.app');
+    socketRef.current = socket;
 
-        const allClients = await getAllClientsFromDeveloper(
-          userId
-        );
-        setClients(formatClients(allClients));
-      } catch (error) {
-        console.error("Error initializing chat:", error);
+    const initializeChat = async () => {
+      const loggedInUserId = getFieldFromCookie('userId');
+      if (!loggedInUserId) {
+        console.warn('userId not found in cookie');
+        return;
       }
+      setSenderId(loggedInUserId);
+
+      const activeChatHistory = await getAllMessagesFromDeveloper(loggedInUserId);
+      setAllMessages(activeChatHistory);
+
+      const otherUsers = extractOtherUsers(activeChatHistory, loggedInUserId); // [6,8]
+      setClients(otherUsers);
+
+      const groupedMessages = groupMessagesByConversation(activeChatHistory);
+      setMessagesByRoom(groupedMessages);
     };
 
     initializeChat();
 
-    const socketURL = process.env.NEXT_PUBLIC_SOCKET_URL;
-    const newSocket = io(socketURL, { reconnection: true });
-    setSocket(newSocket);
+    socket.on('connect', () => {
+      console.log('Connected to server!', socket.id);
+    });
 
-    // Socket events
-    newSocket.on("receiveMessage", (message) => {
-      setMessagesByRoom((prevMessages) => ({
-        ...prevMessages,
-        [message.roomName]: [
-          ...(prevMessages[message.roomName] || []),
-          message,
-        ],
+    socket.on('receiveMessage', message => {
+      setMessagesByRoom(prev => ({
+        ...prev,
+        [message.conversationId]: [...(prev[message.conversationId] || []), message],
       }));
     });
 
-    newSocket.on("chatHistory", (chatMessages) => {
-      setMessagesByRoom((prevMessages) => ({
-        ...prevMessages,
-        [roomName]: chatMessages,
+    socket.on('chatHistory', chatMessages => {
+      const groupedMessages = chatMessages.reduce((acc, msg) => {
+        if (!acc[msg.conversationId]) acc[msg.conversationId] = [];
+        acc[msg.conversationId].push(msg);
+        return acc;
+      }, {});
+
+      setMessagesByRoom(prev => ({
+        ...prev,
+        ...groupedMessages,
       }));
     });
+
+    if (receiverId) {
+      joinRoom(receiverId);
+    }
 
     return () => {
-      newSocket.disconnect();
+      console.log('Disconnecting socket...');
+      socket.disconnect();
     };
-  }, []);
+  }, [receiverId]);
 
-  // Join room
-  const joinRoom = (specificRoomName = null) => {
-    if (!specificRoomName && !receiverId) {
-      alert("Please enter or select a receiver!");
+  useEffect(() => {
+    const socket = socketRef.current;
+    socket.emit('fetchMessages', { senderId, receiverId });
+    scrollToBottom();
+  }, [messagesByRoom]);
+
+  const joinRoom = inputUserId => {
+    const socket = socketRef.current;
+    if (!socket) {
+      console.error('Socket not initialized!');
       return;
     }
 
-    if (!senderId) {
-      alert("Sender ID is not available!");
-      return;
-    }
+    setReceiverId(inputUserId);
 
-    const room =
-      specificRoomName || `${receiverId}_${senderId}`;
-    setRoomName(room);
+    const conversationId = getConversationIdFromMessages(allMessages, inputUserId, senderId);
 
-    socket.emit("joinRoom", {
-      senderId,
-      receiverId,
-      roomName: room,
-    });
-    socket.emit("fetchMessages", { roomName: room });
+    setCombinedRoom(`${senderId}_${inputUserId}`);
+    setConversationId(conversationId);
+
+    socket.emit('joinRoom', { senderId, inputUserId });
   };
 
-  // Send message
-  const sendMessage = () => {
-    if (!roomName) {
-      alert("Please join a room first!");
+  const sendMessage = async () => {
+    const socket = socketRef.current;
+    if (!socket) {
+      console.error('Socket not initialized!');
       return;
     }
 
     if (!messageInput.trim()) {
-      alert("Please enter a message to send!");
+      toast.info('Message cannot be empty!');
       return;
     }
 
-    const message = {
-      senderId,
-      receiverId,
-      message: messageInput,
-      roomName,
-    };
+    if (!combinedRoom) {
+      toast.info('Join a room first');
+      return;
+    }
 
-    socket.emit("sendMessage", message);
-    setMessagesByRoom((prevMessages) => ({
-      ...prevMessages,
-      [roomName]: [
-        ...(prevMessages[roomName] || []),
-        message,
-      ],
+    const message = { senderId, receiverId, message: messageInput };
+    socket.emit('sendMessage', message);
+
+    const activeChatHistory = await getAllMessagesFromDeveloper(senderId);
+    setAllMessages(activeChatHistory);
+
+    const conversationId = getConversationIdFromMessages(allMessages, receiverId, senderId);
+
+    setMessagesByRoom(prev => ({
+      ...prev,
+      [conversationId]: [...(prev[conversationId] || []), message],
     }));
-    setMessageInput("");
+
+    setMessageInput('');
+    scrollToBottom();
   };
 
-  // Auto-scroll to latest message
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({
-      behavior: "smooth",
-    });
-  }, [messagesByRoom, roomName]);
-
   return (
-    <div className="flex h-full bg-gray-100 flex-col mx-auto max-w-screen-xl">
-      <div className="flex flex-1 p-10 flex-col">
-        <div className="flex flex-grow bg-white shadow-lg rounded-2xl">
+    <div className='w-full h-full flex-1 bg-gray-100'>
+      <div className='flex sm:p-10 p-0 flex-col mx-auto  max-w-screen-xl h-full'>
+        <div className='flex h-full bg-white shadow-lg rounded-2xl'>
           {/* Sidebar */}
-          <div className="w-1/4 flex flex-col border-r-2 border-gray-100">
-            <div className="p-4">
-              <h2 className="text-xl font-bold text-primary-blue-dark">
-                Chat App
-              </h2>
+          <div className='w-1/4 flex flex-col border-r-2 border-gray-100'>
+            <div className='p-4'>
+              <h2 className='text-xl font-bold text-primary-blue-dark'>WEflance Chat</h2>
             </div>
-
-            <div className="p-4">
-              <label
-                htmlFor="receiverId"
-                className="block font-medium mb-2"
-              >
+            <div className='p-4'>
+              <label htmlFor='receiverId' className='block font-medium mb-2'>
                 Chat with:
               </label>
-              <input
-                type="number"
-                id="receiverId"
-                value={receiverId || ""}
-                onChange={(e) =>
-                  setReceiverId(e.target.value)
-                }
-                placeholder="Enter receiver ID"
-                className="w-full border rounded-lg px-3 py-2 mb-4"
-              />
-              <button
-                onClick={() => joinRoom()}
-                className="w-full bg-primary-400 text-white font-semibold py-2 rounded-lg hover:bg-primary-blue"
+              <form
+                onSubmit={e => {
+                  e.preventDefault();
+                  joinRoom(receiverInput);
+                }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    joinRoom(receiverInput);
+                  }
+                }}
               >
-                Start Chat
-              </button>
+                <input
+                  type='number'
+                  id='receiverId'
+                  value={receiverInput}
+                  onChange={e => setReceiverInput(e.target.value)}
+                  placeholder='Enter receiver ID'
+                  className='w-full border rounded-lg px-3 py-2 mb-4'
+                />
+                <button
+                  className='w-full bg-primary-blue text-white py-2 rounded-lg hover:bg-primary-accent-light'
+                  type='submit'
+                >
+                  Start Chat
+                </button>
+              </form>
             </div>
-
-            {/* Chat Rooms List */}
-            <div className="p-4">
-              <h3 className="text-lg font-bold mb-2">
-                Your Chats
-              </h3>
-              <ul className="space-y-2">
+            {/* Chat List */}
+            <div className='p-4'>
+              <h3 className='text-lg font-bold mb-2'>Your Chats</h3>
+              <ul className='space-y-2'>
                 {clients.map((client, index) => (
                   <li
                     key={index}
-                    className="p-2 bg-gray-200 rounded-lg cursor-pointer hover:bg-gray-300"
-                    onClick={() =>
-                      joinRoom(`${client.id}_${senderId}`)
-                    }
+                    className='p-2 bg-gray-200 rounded-lg cursor-pointer hover:bg-gray-300'
+                    onClick={() => setReceiverId(client)}
                   >
-                    Chat with
-                    {client.name || `User ${client.id}`}
+                    Chat with {client || `User ${client}`}
                   </li>
                 ))}
               </ul>
@@ -190,54 +198,58 @@ const Chat = () => {
           </div>
 
           {/* Chat Section */}
-          <div className="flex-1 flex flex-col">
-            <div className="p-4 flex items-center border-b-2 border-gray-100">
-              <h3 className="text-lg font-semibold">
-                Chat Room: {roomName || "No room joined"}
-              </h3>
+          <div className='flex-grow flex flex-col max-w-full'>
+            {/* Header */}
+            <div className='p-4 flex items-center border-b-2 border-gray-100'>
+              <h3 className='text-lg font-semibold'>Chat Room: {combinedRoom || 'No room joined'}</h3>
             </div>
 
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto bg-gray-50 p-4">
-              {(messagesByRoom[roomName] || []).map(
-                (msg, index) => (
+            {/* Chat Messages */}
+            <div
+              className='flex-grow flex flex-col bg-gray-50 p-4 overflow-y-auto'
+              style={{ maxHeight: 'calc(100vh - 200px)' }}
+            >
+              {(messagesByRoom[conversationId] || []).map((msg, index) => {
+                const receiverName = clients.find(client => client.id === msg.senderId)?.name;
+
+                return (
                   <div
                     key={index}
-                    className={`mb-2 p-3 rounded-lg max-w-md ${
-                      msg.senderId === senderId
-                        ? "bg-primary-purple text-white ml-auto"
-                        : "bg-gray-200 text-black"
+                    className={`mb-2 p-3 rounded-lg break-words ${
+                      Number(msg.senderId) === Number(senderId)
+                        ? 'bg-primary-purple text-white ml-auto'
+                        : 'bg-gray-200 text-black mr-auto'
                     }`}
                   >
                     <strong>
-                      {msg.senderId === senderId
-                        ? "You"
-                        : `User ${msg.senderId}`}
-                      :
+                      {Number(msg.senderId) === Number(senderId) ? 'You' : receiverName || `User ${msg.senderId}`}
                     </strong>
-                    {msg.message}
+                    : {msg.message}
                   </div>
-                )
-              )}
+                );
+              })}
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Message Input */}
-            <div className="p-4 border-t-2 border-gray-100 flex items-center">
+            {/* Input Section */}
+            <div className='p-4 border-t-2 border-gray-100 flex items-center'>
               <input
-                type="text"
+                type='text'
                 value={messageInput}
-                onChange={(e) =>
-                  setMessageInput(e.target.value)
-                }
-                placeholder="Type a message..."
-                className="flex-1 rounded-lg px-3 py-2 mr-2"
+                onChange={e => setMessageInput(e.target.value)}
+                placeholder='Type a message...'
+                className='flex-1 border rounded-lg px-3 py-2 mr-2'
+                onKeyDown={e => {
+                  if (e.key === 'Enter') sendMessage();
+                }}
+                aria-label='Message input'
               />
               <button
                 onClick={sendMessage}
-                className=" text-white py-2 px-4 rounded-lg"
+                className='bg-gray-100 text-white py-2 px-4 rounded-lg hover:bg-gray-200'
+                aria-label='Send message'
               >
-                <PaperAirplaneIcon className="h-6 w-6 text-primary-400" />
+                <PaperAirplaneIcon className='h-6 w-6 text-primary-blue' aria-hidden='true' />
               </button>
             </div>
           </div>
