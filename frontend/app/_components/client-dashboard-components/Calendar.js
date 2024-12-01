@@ -65,7 +65,7 @@ function Calender() {
     fetchUserData();
   }, []);
 
-  const HandleDateClick = (selected) => {
+  const handleDateClick = (selected) => {
     setSelectDate(selected);
     setIsDialogOpen(true);
   };
@@ -159,9 +159,12 @@ function Calender() {
 
   return (
     <>
-      <div className="flex w-full px-10 justify-start items-start gap-8">
-        <div className="w-3/12">
-          <div className="py-10 text-2xl font-extrabold px-7">
+      <div
+        className="flex flex-col lg:flex-row w-full px-4
+       md:px-10 justify-start items-start gap-4 md:gap-8"
+      >
+        <div className="w-full lg:w-3/12">
+          <div className="py-6 md:py-10 text-xl md:text-2xl font-extrabold px-4 md:px-7">
             Calendar Event
           </div>
           <ul className="space-y-4">
@@ -175,8 +178,8 @@ function Calender() {
               currentEvent.map((event) => (
                 <li
                   className=" flex flex-col justify-between items-center gap-2 font-semibold
-                   border border-gray-200 shadow px-4 py-2 rounded-md bg-sky-700 
-                    text-primary-neutral-light lg:flex-row "
+                     border border-gray-200 shadow px-4 py-2 rounded-md bg-sky-700 
+                      text-primary-neutral-light lg:flex-row "
                   key={event.id}
                 >
                   {event.title}
@@ -203,9 +206,9 @@ function Calender() {
               ))}
           </ul>
         </div>
-        <div className="w-9/12 mt-8">
+        <div className="w-full lg:w-9/12 mt-6 lg:mt-8">
           <FullCalendar
-            height={"60vh"}
+            height={"50vh"}
             plugins={[dayGridPlugin, interactionPlugin]}
             headerToolbar={{
               left: "prev,next today",
@@ -217,7 +220,11 @@ function Calender() {
             selectable={true}
             selectMirror={true}
             dayMaxEvents={true}
-            select={HandleDateClick}
+            select={(selected) => {
+              if (selected) {
+                handleDateClick(selected);
+              }
+            }}
             eventClick={handleEventClick}
             eventsSet={(events) =>
               setCurrentEvent(
@@ -244,7 +251,7 @@ function Calender() {
             <DialogTitle>Add Event</DialogTitle>
           </DialogHeader>
           <form
-            className="space-x-5 mb-4"
+            className="space-y-4 md:space-x-5 mb-4"
             onSubmit={handleAddEvent}
           >
             <input
@@ -255,10 +262,10 @@ function Calender() {
                 setNewEventTitle(e.target.value)
               }
               required
-              className="border border-gray-200 p-3 rounded-md text-lg"
+              className="border border-gray-200 p-3 rounded-md text-sm md:text-lg w-full"
             />
             <button
-              className="bg-accent-300 text-white p-3 mt-5 rounded-md"
+              className="bg-accent-300 text-white p-3 mt-3 md:mt-5 rounded-md w-full md:w-auto"
               type="submit"
             >
               Add

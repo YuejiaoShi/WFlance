@@ -39,7 +39,7 @@ export default function Header() {
     { name: 'Dashboard', path: '/dev-dashboard' },
     { name: 'Projects', path: '/dev-dashboard/projects' },
     { name: 'Chat', path: '/dev-dashboard/chat' },
-    { name: 'Events', path: '/dev-dashboard/events' },
+    { name: 'Calendar', path: '/dev-dashboard/calendar' },
   ];
 
   const HeaderContent = () => (
