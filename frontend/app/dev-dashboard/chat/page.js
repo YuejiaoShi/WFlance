@@ -218,7 +218,7 @@ const Chat = () => {
                     className={`mb-2 p-3 rounded-lg break-words ${
                       Number(msg.senderId) === Number(senderId)
                         ? 'bg-primary-purple text-white ml-auto'
-                        : 'bg-gray-200 text-black'
+                        : 'bg-gray-200 text-black mr-auto'
                     }`}
                   >
                     <strong>
