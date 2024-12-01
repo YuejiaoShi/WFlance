@@ -10,6 +10,11 @@ const chatSocket = (io, socket) => {
     console.log("Received 'joinRoom' event");
     //console.log(`Sender ID: ${senderId}, Receiver ID: ${receiverId}`);
 
+    //new line
+    if (!senderId || !receiverId) {
+      console.error("Invalid joinRoom parameters:", { senderId, receiverId });
+      return;
+    }
     const participantIds = [senderId, receiverId].sort().join("_");
     console.log(`Computed participantIds: ${participantIds}`);
 
@@ -29,13 +34,18 @@ const chatSocket = (io, socket) => {
 
       socket.join(conversation.id);
       console.log(`User joined conversation: ${conversation.id}`);
+      socket.emit("joinedRoom", { conversationId: conversation.id });
     } catch (error) {
       console.error("Error at 'joinRoom' event:", error);
     }
   });
 
   socket.on("sendMessage", async ({ senderId, receiverId, message }) => {
-    console.log("Received 'sendMessage' event");
+    console.log("Received 'sendMessage' event", {
+      senderId,
+      receiverId,
+      message,
+    });
     if (!message || !senderId || !receiverId) {
       console.error("Invalid message data:", { senderId, receiverId, message });
       return;
@@ -47,7 +57,10 @@ const chatSocket = (io, socket) => {
     });
 
     if (!conversation) {
-      console.error("Conversation not found");
+      console.error(
+        "Conversation not found for participantIds:",
+        participantIds
+      );
       return;
     }
 
