@@ -209,6 +209,59 @@ const DevProjectsList = () => {
           </div>
         </CardContent>
       </Card>
+
+      <AnimatePresence className='w-full'>
+        {selectedProject && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className='max-w-full fixed inset-0 bg-black/50 flex items-center justify-center z-50'
+            onClick={() => setSelectedProject(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className='bg-white p-6 rounded-lg m-4'
+              onClick={e => e.stopPropagation()}
+            >
+              <h2 className='text-2xl font-bold mb-4 text-center'>{selectedProject.title}</h2>
+              <div className='flex justify-center mb-4'>
+                <div className='bg-purple-100 rounded-full p-4'>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    className='h-10 w-10 text-purple-600'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    stroke='currentColor'
+                  >
+                    <path
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      strokeWidth={2}
+                      d='M12 9v3m0 4h.01M12 2a10 10 0 110 20 10 10 0 010-20z'
+                    />
+                  </svg>
+                </div>
+              </div>
+
+              <p className='mb-6 text-center text-gray-700'>Are you sure you want to take on this project?</p>
+              <div className='flex justify-center gap-6'>
+                <Button
+                  className='w-full bg-primary-blue text-white py-2 px-4 rounded-md hover:bg-primary-blue-dark transition'
+                  onClick={handleTakeOnProject}
+                >
+                  Yes 🚀
+                </Button>
+                <Button onClick={() => setSelectedProject(null)} className='w-full'>
+                  Cancel
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
