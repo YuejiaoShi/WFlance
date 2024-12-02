@@ -1,10 +1,17 @@
 export function extractOtherUsers(data, userId) {
-  const users = new Set();
+  const users = [];
+
   data.forEach(item => {
-    if (item.senderId !== userId) users.add(item.senderId);
-    if (item.receiverId !== userId) users.add(item.receiverId);
+    if (Number(item.senderId) !== Number(userId) && !users.some(user => user.id === item.senderId)) {
+      users.push({ id: item.senderId, conversationId: item.conversationId });
+    }
+
+    if (Number(item.receiverId) !== Number(userId) && !users.some(user => user.id === item.receiverId)) {
+      users.push({ id: item.receiverId, conversationId: item.conversationId });
+    }
   });
-  return Array.from(users);
+
+  return users;
 }
 
 export function groupMessagesByConversation(histories) {

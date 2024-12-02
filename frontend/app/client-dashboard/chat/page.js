@@ -2,7 +2,7 @@
 
 import { getFieldFromCookie } from '@/app/utils/auth';
 import { getAllMessagesFromDeveloper } from '@/app/utils/chatUtil';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, use } from 'react';
 import io from 'socket.io-client';
 import { PaperAirplaneIcon } from '@heroicons/react/24/solid';
 import { toast } from 'react-toastify';
@@ -39,7 +39,7 @@ const Chat = () => {
       const activeChatHistory = await getAllMessagesFromDeveloper(loggedInUserId);
       setAllMessages(activeChatHistory);
 
-      const otherUsers = extractOtherUsers(activeChatHistory, loggedInUserId); // [6,8]
+      const otherUsers = extractOtherUsers(activeChatHistory, loggedInUserId);
       setClients(otherUsers);
 
       const groupedMessages = groupMessagesByConversation(activeChatHistory);
@@ -57,6 +57,14 @@ const Chat = () => {
         ...prev,
         [message.conversationId]: [...(prev[message.conversationId] || []), message],
       }));
+    });
+
+    socket.on('joinedRoom', response => {
+      if (response.conversationId) {
+        setConversationId(response.conversationId);
+      } else {
+        console.error('Invalid joinedRoom response from server');
+      }
     });
 
     socket.on('chatHistory', chatMessages => {
@@ -88,6 +96,17 @@ const Chat = () => {
     scrollToBottom();
   }, [messagesByRoom]);
 
+  useEffect(() => {
+    const fetchMessages = async () => {
+      const activeChatHistory = await getAllMessagesFromDeveloper(Number(senderId));
+      setAllMessages(activeChatHistory);
+
+      const otherUsers = extractOtherUsers(activeChatHistory, senderId);
+      setClients(otherUsers);
+    };
+    fetchMessages();
+  }, [messageInput]);
+
   const joinRoom = inputUserId => {
     const socket = socketRef.current;
     if (!socket) {
@@ -97,16 +116,18 @@ const Chat = () => {
 
     setReceiverId(inputUserId);
 
-    const conversationId = getConversationIdFromMessages(allMessages, inputUserId, senderId);
+    const conversationIdByMessages = getConversationIdFromMessages(allMessages, inputUserId, senderId);
+    if (conversationIdByMessages) {
+      setConversationId(conversationIdByMessages);
+    }
 
     setCombinedRoom(`${senderId}_${inputUserId}`);
-    setConversationId(conversationId);
-
-    socket.emit('joinRoom', { senderId, inputUserId });
+    socket.emit('joinRoom', { senderId, receiverId: inputUserId });
   };
 
-  const sendMessage = async () => {
+  const sendMessage = () => {
     const socket = socketRef.current;
+
     if (!socket) {
       console.error('Socket not initialized!');
       return;
@@ -122,13 +143,10 @@ const Chat = () => {
       return;
     }
 
-    const message = { senderId, receiverId, message: messageInput };
-    socket.emit('sendMessage', message);
-
-    const activeChatHistory = await getAllMessagesFromDeveloper(senderId);
-    setAllMessages(activeChatHistory);
-
     const conversationId = getConversationIdFromMessages(allMessages, receiverId, senderId);
+
+    const message = { senderId, receiverId, conversationId, message: messageInput };
+    socket.emit('sendMessage', message);
 
     setMessagesByRoom(prev => ({
       ...prev,
@@ -181,16 +199,18 @@ const Chat = () => {
               </form>
             </div>
             {/* Chat List */}
-            <div className='p-4'>
+            <div className='p-4 max-h-full overflow-y-auto'>
               <h3 className='text-lg font-bold mb-2'>Your Chats</h3>
               <ul className='space-y-2'>
                 {clients.map((client, index) => (
                   <li
                     key={index}
                     className='p-2 bg-gray-200 rounded-lg cursor-pointer hover:bg-gray-300'
-                    onClick={() => setReceiverId(client)}
+                    onClick={() => {
+                      setReceiverId(client.id);
+                    }}
                   >
-                    Chat with {client || `User ${client}`}
+                    Client {client.id || `User ${client.id}`}
                   </li>
                 ))}
               </ul>
@@ -199,7 +219,6 @@ const Chat = () => {
 
           {/* Chat Section */}
           <div className='flex-grow flex flex-col max-w-full'>
-            {/* Header */}
             <div className='p-4 flex items-center border-b-2 border-gray-100'>
               <h3 className='text-lg font-semibold'>Chat Room: {combinedRoom || 'No room joined'}</h3>
             </div>
@@ -210,8 +229,6 @@ const Chat = () => {
               style={{ maxHeight: 'calc(100vh - 200px)' }}
             >
               {(messagesByRoom[conversationId] || []).map((msg, index) => {
-                const receiverName = clients.find(client => client.id === msg.senderId)?.name;
-
                 return (
                   <div
                     key={index}
@@ -221,10 +238,8 @@ const Chat = () => {
                         : 'bg-gray-200 text-black mr-auto'
                     }`}
                   >
-                    <strong>
-                      {Number(msg.senderId) === Number(senderId) ? 'You' : receiverName || `User ${msg.senderId}`}
-                    </strong>
-                    : {msg.message}
+                    <strong>{Number(msg.senderId) === Number(senderId) ? 'You' : `User ${msg.senderId}`}</strong>:{' '}
+                    {msg.message}
                   </div>
                 );
               })}

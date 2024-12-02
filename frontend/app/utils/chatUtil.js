@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import { defaultSuccessCallback, handleResponse, sendGetRequest } from './resHandler';
 
 export const getAllMessagesFromDeveloper = async developerId => {
