@@ -43,7 +43,7 @@ const DevDashboard = () => {
         <div className='flex-1 hover:shadow-xl' onClick={() => router.push('/dev-dashboard/projects')}>
           <ProjectCard />
         </div>
-        <div className='flex-1 hover:shadow-xl' onClick={() => router.push('/dev-dashboard/events')}>
+        <div className='flex-1 hover:shadow-xl' onClick={() => router.push('/dev-dashboard/calendar')}>
           <BookEvent />
         </div>
       </div>
