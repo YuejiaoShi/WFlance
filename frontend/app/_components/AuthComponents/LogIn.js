@@ -61,7 +61,7 @@ const LogIn = () => {
           type='submit'
           className=' flex items-center justify-center w-full bg-primary-purple text-white py-2 rounded-lg hover:bg-primary-purple-dark transition-colors'
         >
-          {isLoading ? <SpinnerMini /> : <span>Login In</span>}
+          {isLoading ? <SpinnerMini /> : <span>Login</span>}
         </button>
       </form>
       {formError && <p className='mt-4 text-red-500'>{formError}</p>}
