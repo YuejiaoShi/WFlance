@@ -13,7 +13,7 @@ export default function RootLayout({ children }) {
   return (
     <div className='h-screen flex flex-col'>
       <Header />
-      <main className='h-full overflow-hidden'>{children}</main>
+      <main className='h-full'>{children}</main>
     </div>
   );
 }

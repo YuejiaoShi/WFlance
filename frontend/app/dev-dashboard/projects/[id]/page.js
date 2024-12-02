@@ -55,7 +55,7 @@ export default function ProjectPage({ params }) {
     <div className='h-full mx-auto max-w-screen-xl flex-grow'>
       <Breadcrumbs
         breadcrumbs={[
-          { label: 'Projects', href: '/dev-dashboard/projects' },
+          { label: 'My Projects', href: '/dev-dashboard/projects' },
           { label: project.title, href: `/dev-dashboard/projects/${id}` },
         ]}
       />
