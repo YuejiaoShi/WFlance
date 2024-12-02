@@ -33,7 +33,7 @@ function ProjectsPage() {
 
   return (
     <div className='mx-auto max-w-screen-xl flex-grow '>
-      <Breadcrumbs breadcrumbs={[{ label: 'Projects', href: '/dev-dashboard/projects' }]} />
+      <Breadcrumbs breadcrumbs={[{ label: 'My Projects', href: '/dev-dashboard/projects' }]} />
 
       <div className='flow-root md:mx-6 mx-0 rounded-lg bg-primary-neutral-light max-w-full p-2 md:pt-0 overflow-auto'>
         {isLoading ? (
