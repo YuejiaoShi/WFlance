@@ -1,15 +1,19 @@
-"use client";
-import React, { useState } from "react";
-import { handleSignUp } from "../../utils/auth";
+'use client';
+import React, { useState } from 'react';
+import { handleSignUp } from '../../utils/auth';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 const SignUp = ({ setRole, error, role }) => {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    phone: "",
-    role_name: role,
+    name: '',
+    email: '',
+    password: '',
+    phone: '',
+    roleName: role,
   });
+
+  const router = useRouter();
 
   const handleInputChange = e => {
     const { name, value } = e.target;
@@ -21,14 +25,17 @@ const SignUp = ({ setRole, error, role }) => {
 
   const onSubmit = async e => {
     e.preventDefault();
-    await handleSignUp(formData);
+    await handleSignUp(formData, () => {
+      router.push('/login');
+      toast.success('Sign Up Successfully! 🎉 Log In now.');
+    });
   };
 
   const inputFields = [
-    { name: "name", type: "text", placeholder: "Name", required: true },
-    { name: "email", type: "email", placeholder: "Email", required: true },
-    { name: "password", type: "password", placeholder: "Password", required: true },
-    { name: "phone", type: "text", placeholder: "Phone", required: false },
+    { name: 'name', type: 'text', placeholder: 'Name', required: true },
+    { name: 'email', type: 'email', placeholder: 'Email', required: true },
+    { name: 'password', type: 'password', placeholder: 'Password', required: true },
+    { name: 'phone', type: 'text', placeholder: 'Phone', required: true },
   ];
 
   return (
