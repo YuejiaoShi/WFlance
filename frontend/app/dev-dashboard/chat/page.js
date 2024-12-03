@@ -1,7 +1,7 @@
 'use client';
 
 import { getFieldFromCookie } from '@/app/utils/auth';
-import { getAllMessagesFromDeveloper, getClientNames } from '@/app/utils/chatUtil';
+import { getAllMessagesFromDeveloper, getClientNameById, getClientNames } from '@/app/utils/chatUtil';
 import React, { useState, useEffect, useRef, use } from 'react';
 import io from 'socket.io-client';
 import { PaperAirplaneIcon } from '@heroicons/react/24/solid';
@@ -19,6 +19,7 @@ const Chat = () => {
   const [receiverInput, setReceiverInput] = useState('');
 
   const [clients, setClients] = useState([]);
+  const [clientName, setClientName] = useState('');
   const [messageInput, setMessageInput] = useState('');
   const [isAtBottom, setIsAtBottom] = useState(true);
   const messagesEndRef = useRef(null);
@@ -141,9 +142,7 @@ const Chat = () => {
       setAllMessages(activeChatHistory);
 
       const otherUserIds = extractOtherUsers(activeChatHistory, senderId);
-      console.log('otherUserIds', otherUserIds);
       const clientsWithNames = await getClientNames(otherUserIds);
-      console.log('clientsWithNames', clientsWithNames);
       setClients(clientsWithNames);
     };
     fetchMessages();
@@ -198,6 +197,14 @@ const Chat = () => {
     setMessageInput('');
     scrollToBottom();
   };
+
+  useEffect(() => {
+    const fetchClientName = async () => {
+      const clientName = await getClientNameById(receiverId);
+      setClientName(clientName);
+    };
+    fetchClientName();
+  }, [combinedRoom]);
 
   return (
     <div className='w-full h-full bg-gray-100'>
@@ -267,7 +274,7 @@ const Chat = () => {
           {/* Chat Section */}
           <div className='flex-grow flex flex-col max-w-full'>
             <div className='p-4 flex items-center border-b-2 border-gray-100'>
-              <h3 className='text-lg font-semibold'>Chat Room: {combinedRoom || 'No room joined'}</h3>
+              <h3 className='text-lg font-semibold'>{clientName ? `Chatting with ${clientName}` : 'No room joined'}</h3>
             </div>
 
             {/* Chat Messages */}

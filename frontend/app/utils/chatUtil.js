@@ -25,3 +25,12 @@ export const getClientNames = async (clientIds, userId) => {
 
   return filteredClients;
 };
+
+export const getClientNameById = async clientId => {
+  const response = await sendGetRequest(`/api/users/${clientId}`);
+  const result = await handleResponse(response, defaultSuccessCallback, () => {});
+  if (result && result.name) {
+    return result.name;
+  }
+  return 'Unknown Client';
+};
