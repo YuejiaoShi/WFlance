@@ -33,7 +33,13 @@ export async function handleResponse(
 
 export const defaultSuccessCallback = result => {};
 export const defaultErrorCallback = errorText => {
-  toast.error(errorText);
+  if (errorText.error) {
+    toast.error = errorText.error;
+  } else if (errorText.message) {
+    toast.error = errorText.message;
+  } else {
+    toast.error(errorText);
+  }
 };
 
 export async function sendPostJsonRequest(url, data = {}, optionsHeaders = {}, optionsFields = {}) {
