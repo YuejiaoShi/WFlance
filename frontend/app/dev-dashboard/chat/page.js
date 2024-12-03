@@ -1,7 +1,7 @@
 'use client';
 
 import { getFieldFromCookie } from '@/app/utils/auth';
-import { getAllMessagesFromDeveloper } from '@/app/utils/chatUtil';
+import { getAllMessagesFromDeveloper, getClientNames } from '@/app/utils/chatUtil';
 import React, { useState, useEffect, useRef, use } from 'react';
 import io from 'socket.io-client';
 import { PaperAirplaneIcon } from '@heroicons/react/24/solid';
@@ -20,9 +20,47 @@ const Chat = () => {
 
   const [clients, setClients] = useState([]);
   const [messageInput, setMessageInput] = useState('');
+  const [isAtBottom, setIsAtBottom] = useState(true);
   const messagesEndRef = useRef(null);
 
-  const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const handleScroll = () => {
+    const chatContainer = messagesEndRef.current?.parentElement;
+
+    if (chatContainer) {
+      const isAtBottom = chatContainer.scrollHeight - chatContainer.scrollTop === chatContainer.clientHeight;
+      setIsAtBottom(isAtBottom);
+    }
+  };
+
+  const scrollToBottom = () => {
+    if (isAtBottom) {
+      const chatContainer = messagesEndRef.current?.parentElement;
+
+      if (chatContainer) {
+        chatContainer.scrollTo({
+          top: chatContainer.scrollHeight,
+          behavior: 'smooth',
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
+    const chatContainer = messagesEndRef.current?.parentElement;
+    if (chatContainer) {
+      chatContainer.addEventListener('scroll', handleScroll);
+    }
+
+    return () => {
+      if (chatContainer) {
+        chatContainer.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, []);
 
   useEffect(() => {
     const socket = io('wss://wflance-production.up.railway.app');
@@ -39,8 +77,9 @@ const Chat = () => {
       const activeChatHistory = await getAllMessagesFromDeveloper(loggedInUserId);
       setAllMessages(activeChatHistory);
 
-      const otherUsers = extractOtherUsers(activeChatHistory, loggedInUserId);
-      setClients(otherUsers);
+      const otherUserIds = extractOtherUsers(activeChatHistory, senderId);
+      const clientsWithNames = await getClientNames(otherUserIds, loggedInUserId);
+      setClients(clientsWithNames);
 
       const groupedMessages = groupMessagesByConversation(activeChatHistory);
       setMessagesByRoom(groupedMessages);
@@ -101,8 +140,11 @@ const Chat = () => {
       const activeChatHistory = await getAllMessagesFromDeveloper(Number(senderId));
       setAllMessages(activeChatHistory);
 
-      const otherUsers = extractOtherUsers(activeChatHistory, senderId);
-      setClients(otherUsers);
+      const otherUserIds = extractOtherUsers(activeChatHistory, senderId);
+      console.log('otherUserIds', otherUserIds);
+      const clientsWithNames = await getClientNames(otherUserIds);
+      console.log('clientsWithNames', clientsWithNames);
+      setClients(clientsWithNames);
     };
     fetchMessages();
   }, [messageInput]);
@@ -158,11 +200,11 @@ const Chat = () => {
   };
 
   return (
-    <div className='w-full h-full flex-1 bg-gray-100'>
-      <div className='flex sm:p-10 p-0 flex-col mx-auto  max-w-screen-xl h-full'>
+    <div className='w-full h-full bg-gray-100'>
+      <div className='flex flex-grow sm:pb-24 sm:pt-8 p-0 flex-col mx-auto max-w-screen-xl h-full'>
         <div className='flex h-full bg-white shadow-lg rounded-2xl'>
           {/* Sidebar */}
-          <div className='w-1/4 flex flex-col border-r-2 border-gray-100'>
+          <div className='lg:w-1/5 w-1/4 flex flex-col border-r-2 border-gray-100'>
             <div className='p-4'>
               <h2 className='text-xl font-bold text-primary-blue-dark'>WEflance Chat</h2>
             </div>
@@ -205,12 +247,17 @@ const Chat = () => {
                 {clients.map((client, index) => (
                   <li
                     key={index}
-                    className='p-2 bg-gray-200 rounded-lg cursor-pointer hover:bg-gray-300'
+                    className='p-1.5 bg-gray-200 rounded-xl cursor-pointer hover:bg-gray-300'
                     onClick={() => {
                       setReceiverId(client.id);
                     }}
                   >
-                    Client {client.id || `User ${client.id}`}
+                    <div className='flex md:flex-row items-center flex-col'>
+                      <span className='flex rounded-full bg-primary-accent-light p-3 h-8 w-8 items-center justify-center text-white mr-2'>
+                        🤵🏻
+                      </span>
+                      <span className='font-semibold'>{client.name || `User ${client.id}`}</span>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -238,7 +285,6 @@ const Chat = () => {
                         : 'bg-gray-200 text-black mr-auto'
                     }`}
                   >
-                    <strong>{Number(msg.senderId) === Number(senderId) ? 'You' : `User ${msg.senderId}`}</strong>:{' '}
                     {msg.message}
                   </div>
                 );
@@ -253,7 +299,7 @@ const Chat = () => {
                 value={messageInput}
                 onChange={e => setMessageInput(e.target.value)}
                 placeholder='Type a message...'
-                className='flex-1 border rounded-lg px-3 py-2 mr-2'
+                className='flex-grow border rounded-lg px-3 py-2 mr-2'
                 onKeyDown={e => {
                   if (e.key === 'Enter') sendMessage();
                 }}
