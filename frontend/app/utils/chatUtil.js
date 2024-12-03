@@ -8,7 +8,7 @@ export const getAllMessagesFromDeveloper = async developerId => {
   });
 };
 
-export const getClientNames = async clientIds => {
+export const getClientNames = async (clientIds, userId) => {
   const clientPromises = clientIds.map(async client => {
     const response = await fetch(`/api/users/${client.id}`);
     const result = await handleResponse(response, defaultSuccessCallback, () => {});
@@ -19,7 +19,9 @@ export const getClientNames = async clientIds => {
   });
 
   const clients = await Promise.all(clientPromises);
-  const filteredClients = clients.filter(client => client !== null && client !== undefined);
+  const filteredClients = clients.filter(
+    client => client !== null && client !== undefined && client.id !== Number(userId)
+  );
 
   return filteredClients;
 };
