@@ -105,7 +105,6 @@ function Calender() {
       });
       if (response.ok) {
         setCurrentEvent(prevEvents => prevEvents.filter(event => event.id !== eventId));
-        setSelectedEvent(null);
       } else {
         console.error('Failed to delete event.');
       }
