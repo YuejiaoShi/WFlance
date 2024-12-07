@@ -8,6 +8,11 @@ https://w-flance.vercel.app/
 
 This project will provide essential features such as client communication, deadline tracking, task lists and status tracking, project dashboards, payment tracking, and task timers—all in one unified platform.
 
+## Demo
+![Home+Auth small](https://github.com/user-attachments/assets/1605a2a7-8704-4743-ba2d-4a9f769f29af)
+![Dev-dashboard](https://github.com/user-attachments/assets/1b114f42-df89-4f11-bea1-c4fd44af0408)
+
+
 ## Key Features
 
 - **Client Communication**: A streamlined messaging with Socket.io system for easy interaction with clients.
