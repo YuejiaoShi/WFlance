@@ -1,4 +1,4 @@
-# WFlance - Freelance Web Developer Platform
+# WEflance - Freelance Web Developer Platform
 
 ## Project Overview
 
