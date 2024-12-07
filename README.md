@@ -10,13 +10,10 @@ This project will provide essential features such as client communication, deadl
 
 ## Key Features
 
-- **Client Communication**: A streamlined messaging system for easy interaction with clients.
+- **Client Communication**: A streamlined messaging with Socket.io system for easy interaction with clients.
 - **Deadline Tracking**: Keep track of project deadlines and milestones with ease.
-- **Task List and Status Tracking**: Organize tasks, assign statuses, and stay on top of progress.
-- **Project Dashboard**: A centralized place to view project details, statuses, and upcoming deadlines.
-- **Payment Status Tracker**: Monitor payment progress and ensure timely transactions.
-- **Payment Integration**: A secure method for clients to make payments directly through the platform.
-- **Timer for Tasks**: Built-in timer to track time spent on various tasks for better productivity.
+- **Project List and Projrct Tracking**: Organize projects, assign them, and stay on top of progress.
+- **Project Dashboard**: A centralized place to view project details and upcoming deadlines.
 
 ## Technologies
 
@@ -24,6 +21,7 @@ This project will provide essential features such as client communication, deadl
 
 - **Next.js**: A powerful React framework for building fast and scalable web applications.
 - **TailwindCSS**: A utility-first CSS framework for designing custom UIs quickly.
+- **ChadCN**: A modern component library built with TailwindCSS, offering customizable and accessible UI components for seamless development.
 - **Material UI**: A popular React component library for implementing Material Design with ease.
 
 ### Backend:
@@ -31,10 +29,12 @@ This project will provide essential features such as client communication, deadl
 - **Node.js**: JavaScript runtime for building fast and scalable network applications.
 - **Express.js**: A minimal web framework for Node.js to build RESTful APIs.
 - **Sequelize**: A promise-based Node.js ORM for working with relational databases like PostgreSQL.
+- **Socket.io**: A library for enabling real-time, bi-directional communication between web clients and servers, widely used for applications like chat systems and live updates.
 
 ### Database:
 
 - **PostgreSQL**: A robust, open-source relational database system used for storing all platform data securely.
+- **AWS RDS**: A fully managed relational database service that simplifies database setup, scaling, and maintenance while ensuring high availability and security.
 
 ### Deployment:
 
@@ -48,7 +48,7 @@ This project will provide essential features such as client communication, deadl
 ## Team Structure
 
 - **Mentor**: Kristoffer Tøllbøll, Magdalena Odrowąż-Żelezik
-- **Team Members**: Alejandro Gispert, YueJias Shi, Ali Reza
+- **Team Members**: Alejandro Gispert, YueJiao Shi, Ali Reza
 - **Company**: YAR Solutions
 
 ## Development Methodology
