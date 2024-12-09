@@ -26,7 +26,7 @@ const Payments = () => {
       const { paymentUrl } = await response.json();
       window.location.href = paymentUrl; // Redirect user to MobilePay
     } catch (error) {
-      console.error("Error initiating payment:", error);
+      console.error("Error initiating payment request:", error);
     }
   };
 
