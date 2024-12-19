@@ -16,6 +16,7 @@ import Cookies from 'js-cookie';
 import { getFieldFromCookie } from '@/app/utils/auth';
 import TimelineDemo from '@/app/_components/DevDashboard/TimelineDemo';
 import { TbTimelineEventText } from 'react-icons/tb';
+// import ColorfulTimeline from '@/app/_components/DevDashboard/ColorfulTimeline';
 
 export default function ProjectPage({ params }) {
   const resolvedParams = use(params);
@@ -137,7 +138,8 @@ export default function ProjectPage({ params }) {
             <TbTimelineEventText className='mr-3 text-primary-blue-dark text-2xl' />
             <strong className='mr-2 md:text-base text-sm'>Timeline:</strong>
           </p>
-          <TimelineDemo />
+          <TimelineDemo projectId={id}/>
+          {/* <ColorfulTimeline /> */}
         </div>
       </div>
     </div>
