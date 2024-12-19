@@ -1,6 +1,8 @@
 'use client';
+
+import { getTimelineByProjectId } from '@/app/utils/projectUtil';
 import { Button } from '@/components/ui/button';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { GoProjectSymlink } from 'react-icons/go';
 
 const TimelineItem = ({ title, date, description, onMilestoneClick, index }) => {
@@ -28,7 +30,9 @@ const TimelineItem = ({ title, date, description, onMilestoneClick, index }) => 
         >
           <GoProjectSymlink color='white' className='p-1 h-7 w-7 ' />
         </div>
-        <p className='-mt-2 px-3 text-sm text-gray-600'>{date}</p>
+        <p className='-mt-2 px-3 text-sm text-gray-600'>
+          {new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}
+        </p>
       </div>
       <div className=' mt-3 ml-6 pb-12'>
         <h4
@@ -50,59 +54,23 @@ const TimelineItem = ({ title, date, description, onMilestoneClick, index }) => 
   );
 };
 
-export default function TimelineDemo() {
-  const timelineData = [
-    {
-      title: 'Title of section 1',
-      date: '4 February, 2022',
-      description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    },
-    {
-      title: 'Title of section 2',
-      date: '12 January, 2022',
-      description:
-        'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
-    },
-    {
-      title: 'Title of section 2',
-      date: '12 January, 2022',
-      description:
-        'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
-    },
-    {
-      title: 'Title of section 2',
-      date: '12 January, 2022',
-      description:
-        'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
-    },
-    {
-      title: 'Title of section 2',
-      date: '12 January, 2022',
-      description:
-        'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
-    },
-    {
-      title: 'Title of section 2',
-      date: '12 January, 2022',
-      description:
-        'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
-    },
-    {
-      title: 'Title of section 2',
-      date: '12 January, 2022',
-      description:
-        'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
-    },
-    {
-      title: 'Title of section 3',
-      date: '27 December, 2021',
-      description:
-        'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti.',
-    },
-  ];
-
+export default function TimelineDemo({ projectId }) {
   const [selectedMilestone, setSelectedMilestone] = useState(null);
+  const [timelineEvents, setTimelineEvents] = useState([]);
+
+  useEffect(() => {
+    const fetchTimelineEvents = async () => {
+      const timelineData = await getTimelineByProjectId(projectId);
+
+      if (Array.isArray(timelineData)) {
+        const sortedTimeline = timelineData.sort((a, b) => new Date(a.eventDate) - new Date(b.eventDate));
+        setTimelineEvents(sortedTimeline);
+      } else {
+        setTimelineEvents([]);
+      }
+    };
+    fetchTimelineEvents();
+  }, []);
 
   const handleMilestoneClick = milestone => {
     setSelectedMilestone(milestone);
@@ -116,13 +84,14 @@ export default function TimelineDemo() {
     <div className='h-full mx-auto max-w-full flex-grow'>
       <div className='flow-root md:mx-6 mx-3 p-2 mt-4'>
         <ol>
-          {timelineData.map((item, index) => (
+          {timelineEvents.map((item, index) => (
             <TimelineItem
               key={index}
               index={index}
               title={item.title}
-              date={item.date}
+              date={item.eventDate}
               description={item.description}
+              link={item.link}
               onMilestoneClick={handleMilestoneClick}
             />
           ))}
@@ -141,7 +110,13 @@ export default function TimelineDemo() {
                 <h3 className='text-lg leading-6 font-medium text-gray-900'>{selectedMilestone.title}</h3>
                 <div className='mt-2 px-7 py-3'>
                   <p className='text-sm text-gray-500'>{selectedMilestone.description}</p>
-                  <p className='text-sm text-gray-500 mt-2'>{selectedMilestone.date}</p>
+                  <p className='text-sm text-gray-500 mt-2'>
+                    {new Date(selectedMilestone.date).toLocaleDateString('en-GB', {
+                      day: '2-digit',
+                      month: 'long',
+                      year: 'numeric',
+                    })}
+                  </p>
                 </div>
                 <div className='items-center px-4 py-3'>
                   <button
@@ -156,7 +131,7 @@ export default function TimelineDemo() {
             </div>
           </div>
         )}
-      </div>{' '}
+      </div>
     </div>
   );
 }
