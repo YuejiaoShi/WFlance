@@ -14,6 +14,9 @@ import { DeleteButton, EditButton, PrintInvoicingButton } from '@/app/_component
 import ProjectSkeleton from '@/app/_components/DevDashboard/ProjectSkeleton';
 import Cookies from 'js-cookie';
 import { getFieldFromCookie } from '@/app/utils/auth';
+import TimelineDemo from '@/app/_components/DevDashboard/TimelineDemo';
+import { TbTimelineEventText } from 'react-icons/tb';
+// import ColorfulTimeline from '@/app/_components/DevDashboard/ColorfulTimeline';
 
 export default function ProjectPage({ params }) {
   const resolvedParams = use(params);
@@ -94,22 +97,22 @@ export default function ProjectPage({ params }) {
           <div>
             <p className='flex items-center mb-4'>
               <PersonOutlineOutlinedIcon className='mr-3 text-primary-blue-dark text-xl md:text-2xl' />
-              <strong className='mr-2 text-base'>Client:</strong> {project.client?.name}
+              <strong className='mr-2 md:text-base text-sm'>Client:</strong> {project.client?.name}
             </p>
             <p className='flex items-center mb-4'>
               <EuroOutlinedIcon className='mr-3 text-primary-blue-dark text-xl md:text-2xl' />
-              <strong className='mr-2 text-base'>Budget:</strong> ${project.budget}
+              <strong className='mr-2 md:text-base text-sm'>Budget:</strong> ${project.budget}
             </p>
           </div>
 
           <div>
             <p className='flex items-center mb-4'>
               <CalendarTodayOutlinedIcon className='mr-3 text-primary-blue-dark text-xl md:text-2xl' />
-              <strong className='mr-2 text-base'>Start Date:</strong> {project.startDate}
+              <strong className='mr-2 md:text-base text-sm'>Start Date:</strong> {project.startDate}
             </p>
             <p className='flex items-center mb-4'>
               <CalendarTodayOutlinedIcon className='mr-3 text-primary-blue-dark text-xl md:text-2xl' />
-              <strong className='mr-2 text-base'>Deadline:</strong> {project.deadline}
+              <strong className='mr-2 md:text-base text-sm'>Deadline:</strong> {project.deadline}
             </p>
           </div>
         </div>
@@ -130,6 +133,14 @@ export default function ProjectPage({ params }) {
         {/* )} */}
 
         <ProgressBar startDate={project.startDate} deadline={project.deadline} status={project.status} />
+        <div className='mt-6'>
+          <p className='flex items-center mb-4'>
+            <TbTimelineEventText className='mr-3 text-primary-blue-dark text-2xl' />
+            <strong className='mr-2 md:text-base text-sm'>Timeline:</strong>
+          </p>
+          <TimelineDemo projectId={id}/>
+          {/* <ColorfulTimeline /> */}
+        </div>
       </div>
     </div>
   );

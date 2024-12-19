@@ -54,9 +54,9 @@ export default function ProgressBar({ startDate, deadline, status }) {
         <strong className='mr-2 md:text-base text-sm'>Progress:</strong>
       </p>
       <div className='relative w-full '>
-        <div className='relative w-full h-6 bg-gray-200 rounded-full overflow-hidden'>
+        <div className='relative w-full md:h-6 h-4 bg-gray-200 rounded-full overflow-hidden'>
           <div
-            className='flex absolute h-6 bg-primary-blue-dark rounded-full'
+            className='flex absolute md:h-6 h-4 bg-primary-blue-dark rounded-full'
             style={{ width: `${animatedProgress}%` }}
           >
             <div className='items-center absolute text-sm font-semibold flex text-white justify-end w-full h-full pr-2'>

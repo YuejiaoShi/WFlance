@@ -63,3 +63,10 @@ export const handleAssignProjectToDeveloper = async (projectId, developerId) => 
     }
   );
 };
+
+export const getTimelineByProjectId = async projectId => {
+  const response = await sendGetRequest(`/api/projects/${projectId}/timeline`);
+  return handleResponse(response, defaultSuccessCallback, () => {
+    toast.error('Failed to delete project');
+  });
+};
